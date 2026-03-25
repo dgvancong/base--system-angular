@@ -1,0 +1,77 @@
+.hrms-sidebar {
+  background: #ffffff;
+  border-right: 1px solid #e9edf2;
+  transition: all 0.2s ease;
+  height: 100vh;
+  position: sticky;
+  top: 0;
+  overflow-y: auto;
+  padding-bottom: 2rem;
+}
+
+.sidebar-brand {
+  padding: 1rem 1rem;
+  border-bottom: 1px solid #edf2f7;
+}
+
+.sidebar-brand h3 {
+  font-weight: 700;
+  font-size: 1.6rem;
+  background: linear-gradient(135deg, #1e2a5e, #2d3a6e);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  letter-spacing: -0.3px;
+  margin: 0;
+}
+
+.logo {
+  font-size: 24px;
+  color: #03A9F4;
+  img {
+    width: 44px;
+    height: auto;
+    object-fit: contain;
+  }
+}
+
+.main-content {
+  background-color: #f8fafc;
+  min-height: 100vh;
+  max-width: 100%;
+  width: 100%;
+  .notice{
+    background-color: #ebebeb;
+    padding: 8px;
+    border-radius: 8px;
+  }
+  .user-profile{
+    .image{
+      width: 32px;
+      object-fit: contain;
+      border-radius: 24px;
+      img{
+        width: 100%;
+      }
+    }
+  }
+}
+
+.top-bar {
+  border-bottom: 1px solid #e9edf2;
+  padding: 1.1rem 1.8rem;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+.collasped-box{
+  padding: 0px 0px 24px 24px;
+
+  .collasped{
+    background: #ebebeb;
+    border-radius: 6px;
+  }
+}
+
+::ng-deep span.anticon.anticon-ng-zorro\:menu_user_icon{
+  font-size: 22px;
+}

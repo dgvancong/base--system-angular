@@ -1,0 +1,26 @@
+<div [style.width]="width" [style.height]="height" [style.padding]="padding" class="content-follow-container">
+    <div class="icon-content-follow" *ngIf="typeIcon == 'clasic'">
+        <img [style.width]="widthImg" [style.height]="heightImg" *ngIf="type == 'load'" src="assets/svg/table-icon.svg" alt="">
+        <img [style.width]="widthImg" [style.height]="heightImg" *ngIf="type == 'search'" src="assets/icons/search-follow.svg" alt="">
+    </div>
+    <div class="icon-content-follow" *ngIf="typeIcon == 'folder'">
+        <img [style.width]="widthImg" [style.height]="heightImg" *ngIf="type == 'load'" src="assets/icons/folder-layer-null.svg" alt="">
+        <img [style.width]="widthImg" [style.height]="heightImg" *ngIf="type == 'search'" src="assets/icons/folder-layer-null-search.svg" alt="">
+    </div>
+    <div class="icon-content-follow" *ngIf="typeIcon == 'file'">
+        <img [style.width]="widthImg" [style.height]="heightImg" *ngIf="type == 'load'" src="assets/icons/table-icon.svg" alt="">
+        <img [style.width]="widthImg" [style.height]="heightImg" *ngIf="type == 'search'" src="assets/icons/no-file-search.svg" alt="">
+    </div>
+
+    <div class="icon-content-follow" *ngIf="typeIcon == 'tag'">
+        <img [style.width]="widthImg" [style.height]="heightImg" *ngIf="type == 'load'" src="assets/icons/content-tag.svg" alt="">
+        <img [style.width]="widthImg" [style.height]="heightImg" *ngIf="type == 'search'" src="assets/icons/content-tag.svg" alt="">
+    </div>
+
+    <div *ngIf="type == 'load'" class="title-content">{{labelFollow}}</div>
+    <div *ngIf="type == 'search'" class="title-content">{{labelFollowSearch}}</div>
+    <div *ngIf="type == 'load'" class="body-content">{{contentFollow}}</div>
+    <div *ngIf="type == 'search'" class="body-content">{{contentFollowSearch}}</div>
+
+    <ng-content select=".content-body-custom"></ng-content>
+</div>

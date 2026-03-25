@@ -21,7 +21,7 @@ export class LoginComponent implements OnInit {
 
   onSubmit() {
     console.log('Đăng nhập:', { email: this.email, password: this.password });
-    // this.router.navigate(['/dashboard']);
+    this.router.navigate(['/admin/manage-user']);
   }
 
 }

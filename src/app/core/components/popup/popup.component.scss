@@ -1,0 +1,29 @@
+.content-popup {
+  .icon-popup {
+    text-align: left;
+  }
+  .text-popup {
+    margin-top: 8px;
+  }
+  .custom-footer {
+    margin-top: 20px;
+    gap: 10px;
+    .btn-footer {
+      width: 50%;
+      text-align: center;
+      height: 40px;
+    }
+    .footer-button-cancel {
+      height: 40px;
+      padding: 8px 16px;
+      gap: 4px;
+      flex: 1 0 0;
+      border: none !important;
+      background-color: #F0F0F0;
+      line-height: 24px;
+    }
+    .footer-button-cancel :hover {
+      background-color: #DDD;
+    }
+  }
+}

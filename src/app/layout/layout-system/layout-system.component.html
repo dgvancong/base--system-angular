@@ -1,0 +1,138 @@
+<div class="px-0 d-flex">
+  <div class="sidebar-col"
+    [class.collapsed]="isCollapsed"
+    [style.width]="isCollapsed ? '82px' : '250px'"
+    id="sidebarCol">
+    <div class="hrms-sidebar">
+      <div class="sidebar-brand">
+        <div class="logo fw7 d-flex gap-2" [class.hidden]="isCollapsed">
+          <img src="assets/image/jira-software-logo.png" alt="GoFinance Logo">
+          <span *ngIf="!isCollapsed" class="mt-1">Cloudron</span>
+        </div>
+      </div>
+      <div class="wrapper">
+        <ul
+          nz-menu
+          nzMode="inline"
+          nzTheme="light"
+          [nzInlineCollapsed]="isCollapsed"
+          [nzInlineIndent]="isCollapsed ? 0 : 24">
+          <li
+            nz-menu-item
+            nz-tooltip
+            nzTooltipPlacement="right"
+            [nzTooltipTitle]="isCollapsed ? 'Dashboard' : ''"
+            class="fw5"
+            nzSelected>
+            <span style="font-size: 18px; color: transparent;" nz-icon nzType="ng-zorro:dashboard_icon"></span>
+            <span>Dashboard</span>
+          </li>
+          <li
+            nzOpen
+            nz-submenu
+            class="fw5"
+            nzTitle="Quản lý người dùng"
+            nzIcon="team">
+            <ul>
+              <li nz-menu-item class="fw5">Danh sách nhân viên</li>
+              <li nz-menu-item class="fw5">Hồ sơ nhân viên</li>
+              <li nz-menu-item class="fw5">Cấu trúc tổ chức</li>
+              <li nz-menu-item class="fw5">Đánh giá hiệu suất
+              </li>
+            </ul>
+          </li>
+          <li
+            nzOpen
+            nz-submenu
+            nzTitle="Quản lý phòng ban"
+            class="fw5"
+            nzIcon="setting">
+            <ul>
+              <li nz-menu-item>Danh sách phòng ban</li>
+              <li nz-menu-item>Phân bổ nhân sự</li>
+              <li
+                nz-submenu
+                nzTitle="Sơ đồ tổ chức"
+                class="fw5">
+                <ul>
+                  <li nz-menu-item>Option 11</li>
+                  <li nz-menu-item>Option 12</li>
+                </ul>
+              </li>
+            </ul>
+          </li>
+        </ul>
+      </div>
+
+      <div class="collasped-box d-flex align-items-center justify-content-center position-absolute bottom-0">
+        <button nz-button class="collasped border-0 p-2" (click)="toggleCollapsed()">
+          <span
+            style="font-size: 16px; color: transparent;"
+            nz-icon
+            [nzType]="isCollapsed ? 'ng-zorro:menu_unfold_icon' : 'ng-zorro:menu_fold_icon'">
+          </span>
+        </button>
+      </div>
+
+    </div>
+  </div>
+  <div class="main-content">
+    <div class="top-bar d-flex align-items-center justify-content-between bg-white">
+      <div class="d-flex align-items-center gap-2">
+
+      </div>
+      <div class="d-flex align-items-center gap-4 justify-content-between">
+        <button nz-button class="border-0 notice p-2">
+          <span
+            style="font-size: 20px; color: transparent;"
+            nz-icon
+            nzType="ng-zorro:menu_notice_icon">
+          </span>
+        </button>
+        <div class="user-profile d-flex align-items-center gap-2 cur-pointer">
+          <div class="image">
+            <img src="assets/image/jira-software-logo.png" alt="GoFinance Logo">
+          </div>
+          <div class="full-name">
+            <p class="p-0 m-0 fs4 fw5">Đồng Văn Công</p>
+            <p class="p-0 m-0 fs2 fw5">dongvancong24@gmail.com</p>
+          </div>
+          <button nz-button class="border-0 p-2" nz-dropdown nzTrigger="click" [nzDropdownMenu]="usermenu">
+            <span
+              style="font-size: 20px; color: transparent;"
+              nz-icon
+              nzType="ng-zorro:box_icon_down">
+            </span>
+          </button>
+        </div>
+
+        <nz-dropdown-menu #usermenu="nzDropdownMenu">
+          <ul nz-menu style="width: 180px; padding: 12px;">
+            <li nz-menu-item class="d-flex align-items-center gap-2 p-2">
+              <span
+                style="font-size: 20px; color: transparent;"
+                nz-icon
+                nzType="ng-zorro:box_icon_profile">
+              </span>
+              Hồ sơ cá nhân
+            </li>
+            <li nz-menu-item class="d-flex align-items-center gap-2 p-2">
+              <span
+                style="font-size: 20px; color: transparent;"
+                nz-icon
+                nzType="ng-zorro:box_icon_logout">
+              </span>
+              Đăng Xuất
+            </li>
+          </ul>
+        </nz-dropdown-menu>
+      </div>
+    </div>
+
+    <!-- Content Area -->
+    <div class="content-area p-4">
+      <router-outlet> </router-outlet>
+    </div>
+
+  </div>
+</div>

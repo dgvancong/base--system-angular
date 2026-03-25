@@ -1,0 +1,183 @@
+<div class="user-system">
+  <div class="header-action d-flex align-items-center justify-content-between  pb-4">
+    <div class="breadcrumbs">
+      <h5 class="fw6">Danh sách người dùng</h5>
+      <p class="m-0 fw5 fs4"> Danh sách người dùng</p>
+    </div>
+    <div class="action d-flex gap-3">
+      <button nz-button class="border-0 excel fw5 p-2 rounded-2 d-flex align-items-center gap-2">
+        <span
+          style="font-size: 20px; color: transparent;"
+          nz-icon
+          nzType="ng-zorro:excel_icon">
+        </span>
+        Tải xuống bằng Excel
+      </button>
+      <button nz-button nzType="primary" class="border-0 add fw5 p-2 rounded-2 text-white d-flex align-items-center gap-2">
+        <span
+          style="font-size: 20px; color: transparent;"
+          nz-icon
+          nzType="ng-zorro:add_icon">
+        </span>
+        Thêm mới
+      </button>
+      <button nz-button class="border-0 filter fw5 p-2 rounded-2 d-flex align-items-center gap-2">
+        <span
+          style="font-size: 20px; color: transparent;"
+          nz-icon
+          nzType="ng-zorro:filter_icon">
+        </span>
+        Bộ lọc
+      </button>
+    </div>
+  </div>
+
+  <div class="content">
+    <nz-table
+      #UserTable
+      [nzShowPagination]="false"
+      [nzFrontPagination]="false"
+      [nzLoading]="loading"
+      [nzTotal]="total"
+      [nzData]="listOfData"
+      [nzPageSize]="pageSize"
+      [nzPageIndex]="pageIndex"
+      [nzNoResult]="noResultTemplate"
+      (nzCurrentPageDataChange)="onCurrentPageDataChange($event)"
+      (nzQueryParams)="onQueryParamsChange($event)"
+      class="border-shadow radius-8">
+      <thead>
+        <tr>
+          <th
+            [nzChecked]="checked"
+            [nzIndeterminate]="indeterminate"
+            (nzCheckedChange)="onAllChecked($event)">
+          </th>
+          <ng-container
+            *ngFor="let colum of listColumnsUserDisplay; index as i"
+            [ngSwitch]="i">
+            <ng-container *ngSwitchDefault>
+              <th
+                scope="col"
+                *ngIf="!colum.hidden"
+                nzAlign="left"
+                nzColumnKey="{{ colum.key }}"
+                class="cl{{ i }}"
+                [nzSortFn]="colum.sortFn">
+                {{ colum.name }}
+              </th>
+            </ng-container>
+          </ng-container>
+          <th class="text-center">
+            Hoạt động
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let data of UserTable.data"
+          [class.selected]="setOfCheckedId.has(data?.id)">
+          <td
+            style="height: 58px; width: 58px;"
+            class="border-bottom"
+            [nzChecked]="setOfCheckedId.has(data?.id)"
+            (nzCheckedChange)="onItemChecked(data, $event)">
+          </td>
+          <td
+            class="text-ghost td-custom">
+            {{data.joinDate}}
+          </td>
+          <td
+            style=" color: #828181; max-width: 324px;"
+            class="text-ghost td-custom">
+            <!-- <div class="column-email">
+              <ng-container
+                *ngIf="data?.avatarUrl; else textAvatar">
+                <nz-avatar
+                  style="border: 1px solid; width: 44px; height: 44px; margin-right: 10px;"
+                  [nzSrc]="data?.avatarUrl"
+                  class="avatar-url">
+                </nz-avatar>
+              </ng-container>
+              <ng-template #textAvatar>
+                <nz-avatar
+                  style="margin-right: 10px;"
+                  [nzText]="data?.displayName : 'SR'"
+                  class="avatar-user">
+                </nz-avatar>
+              </ng-template>
+            </div> -->
+          </td>
+          <td
+            class="text-ghost td-custom">
+            {{data.email}}
+          </td>
+          <td class="text-ghost td-custom">
+            {{data.phone}}
+          </td>
+          <td class="text-ghost td-custom ">
+            {{data.department}}
+          </td>
+          <td class="text-ghost td-custom">
+            {{data.jobPosition}}
+          </td>
+          <td class="text-ghost td-custom">
+            {{data.status}}
+          </td>
+          <td class="text-ghost td-custom text-center">
+            <div class="action d-flex align-items-center justify-content-center gap-3 cur-pointer">
+
+              <span style="font-size: 18px; color: transparent;" nz-icon nzType="ng-zorro:bx_edit_icon"></span>
+
+              <span style="font-size: 18px; color: transparent;" nz-icon nzType="ng-zorro:bx_details_icon" (click)="showUserDetails(data)"></span>
+
+              <span style="font-size: 18px; color: transparent;" nz-icon nzType="ng-zorro:bx_delete_icon" (click)="showDeleteRole()"></span>
+
+            </div>
+          </td>
+        </tr>
+      </tbody>
+      <tfoot>
+        <tr>
+          <td colspan="100%" class="p-3 text-center">
+            <app-pagination
+              [data]="listOfDisplayData"
+              [start]="start"
+              [end]="end"
+              [total]="total"
+              [page]="page"
+              [pageSize]="pageSize"
+              [pageSizeOptions]="pageSizeOptions"
+              (onJump)="jumpToPage($event)"
+              (onChangePage)="handlePageIndexChange($event)"
+              (onPageSizeChange)="handlePageSizeChange($event)">
+            </app-pagination>
+          </td>
+        </tr>
+      </tfoot>
+    </nz-table>
+  </div>
+
+  <ng-template #noResultTemplate>
+    <app-content-follow
+      [typeIcon]="'clasic'"
+      [labelFollow]="'Danh sách người dùng trống '"
+      [contentFollow]="'Bạn có thể thêm người dùng vào hệ thống'"
+      [labelFollowSearch]="'Không tìm thấy kết quả người dùng'"
+      [contentFollowSearch]="'Thông tin bạn đang tìm kiếm không tồn tại'"
+      [type]="typeNoResult">
+    </app-content-follow>
+  </ng-template>
+
+</div>
+
+
+<!-- Modal xóa user -->
+<app-popup
+  [isVisiblePopup]="isDeleteRole"
+  [type]="'warning'"
+  [nzMaskClosable]="true"
+  [label]="'Xóa người dùng'"
+  [contentText]="'Người dùng bị xóa sẽ không thể sử dụng cho người dùng. Bạn chắc chắn muốn xóa người dùng?'"
+  (onCancel)="canceDeleteRole()"
+  (onOk)="submitDeleteRole()">
+</app-popup>

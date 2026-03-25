@@ -1,0 +1,67 @@
+.footer-table {
+    padding: 0px;
+    background: transparent;
+    .pagination-form {
+      gap: 20px;
+      .input-text-form {
+        gap: 15px;
+        .jump-input {
+          width: 70px;
+          background-color: #F9F9FC;
+          border-radius: 4px !important;
+          height: 30px !important;
+        }
+      }
+    }
+  }
+  .page-size-selector {
+    gap: 8px;
+  }
+
+  .select-page{
+    display: flex;
+    align-items: center;
+    padding: 8px 12px;
+    gap: 4px;
+    border-radius: 8px;
+    border: 1px solid #DDD;
+    background: #F9F9FC;
+  }
+
+  .page-size-selector option {
+    padding: 15px;
+    color: #828181;
+    font-size: 12px;
+    font-weight: 600;
+    background-color: #fff;
+  }
+
+  .custom-select {
+    width: 80px;
+    padding: 5px;
+    border: 1px solid #d9d9d9;
+    background-color: #fff;
+    line-height: 1.5;
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    cursor: pointer;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+  }
+
+  .custom-select:hover {
+    border-color: #40a9ff;
+  }
+
+  .custom-select:focus {
+    outline: none;
+    border-color: #40a9ff;
+    box-shadow: 0px 4px 30px 0px rgba(46, 45, 116, 0.05);
+  }
+
+  .custom-select option {
+    padding: 5px;
+    background-color: #fff;
+    color: #000;
+    font-size: 14px;
+  }

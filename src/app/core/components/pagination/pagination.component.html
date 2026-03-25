@@ -1,0 +1,35 @@
+<div class="footer-table page d-flex align-center bold-large-text sm-size justify-between flex-wrap radius-8" *ngIf="data.length">
+  <ng-container *ngIf="isShowInfoPage">
+    <div class="page-size-selector d-flex align-center" *ngIf="showPageSizeSelector">
+      <span>Hiển thị</span>
+      <select class="custom-select radius-4 normal-size nor-color" [(ngModel)]="pageSize" (ngModelChange)="handlePageSizeChange($event)">
+        <option *ngFor="let size of pageSizeOptions" [ngValue]="size">{{ size }}</option>
+      </select>
+       trong {{total}} bản ghi
+    </div>
+    <div class="page-size-selector" *ngIf="!showPageSizeSelector">
+      <span>Hiển thị {{start}} đến {{end}} </span>
+       trong {{total}}
+    </div>
+  </ng-container>
+  <div class="pagination-form d-flex align-center justify-end">
+    <div class="input-text-form d-flex align-center" *ngIf="isJumPage">
+      <div class="label-input-jump bold-large-text sm-size text-second">Đến trang số</div>
+      <input
+        nz-input
+        class="jump-input"
+        type="text"
+        inputmode="numeric"
+        [(ngModel)]="jumpPage"
+        (input)="onInput($event)"
+        (keyup.enter)="jumpToPage()">
+    </div>
+    <nz-pagination
+      [nzPageIndex]="page"
+      [nzTotal]="total"
+      [nzPageSize]="pageSize"
+      (nzPageIndexChange)="handlePageIndexChange($event)"
+      [nzShowSizeChanger]="false">
+    </nz-pagination>
+  </div>
+</div>

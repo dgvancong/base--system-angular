@@ -1,0 +1,68 @@
+<nz-modal
+  [(nzVisible)]="isVisiblePopup"
+  [nzMaskClosable]="true"
+  [nzTitle]
+  (nzOnCancel)="handleCancel()"
+  (nzOnOk)="handleOk()"
+  [nzOkLoading]="isOkLoading"
+  [nzFooter]="null"
+  [nzClassName]="'popup-custom'"
+  [nzClosable]="false"
+  [nzWidth]="width">
+  <div *nzModalContent class="content-popup">
+    <div class="icon-popup" *ngIf="showIcon">
+      <span
+        *ngIf="type == 'success'"
+        nz-icon
+        nzType="ng-zorro:warning_noti_icon"
+        style="font-size: 48px !important;">
+      </span>
+      <span
+        *ngIf="type == 'danger'"
+        nz-icon
+        nzType="ng-zorro:danger_popup_icon"
+        style="font-size: 48px !important;">
+      </span>
+      <span
+        *ngIf="type == 'info'"
+        nz-icon
+        nzType="ng-zorro:info_popup_icon"
+        style="font-size: 48px !important;">
+      </span>
+      <span
+        *ngIf="type == 'warning'"
+        nz-icon
+        nzType="ng-zorro:warning_noti_icon"
+        style="font-size: 48px !important;">
+      </span>
+      <span
+        *ngIf="type == 'error'"
+        nz-icon
+        nzType="ng-zorro:error_popup_icon"
+        style="font-size: 48px !important;">
+      </span>
+    </div>
+    <div class="label-popup nor-color fs6 fw6">{{label}}</div>
+    <div class="text-popup bold-text fw5">
+      {{contentText}}
+    </div>
+
+    <ng-content select=".content-body-custom"></ng-content>
+
+    <div *ngIf="isFooterDefaul"
+      class="custom-footer d-flex align-items-center justify-content-center">
+      <button
+        nz-button
+        class="footer-button-cancel btn-footer d-flex align-items-center justify-content-center radius-8 text-second fw5"
+        nzType="default" (click)="handleCancel()">Hủy</button>
+      <button class="btn-footer justify-content-center"
+        nz-button
+        [nzLoading]="isOkLoading"
+        nzType="primary"
+        (click)="handleOk()">
+        Xác nhận
+      </button>
+    </div>
+
+  </div>
+</nz-modal>

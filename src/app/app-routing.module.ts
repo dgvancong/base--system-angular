@@ -7,16 +7,15 @@ const routes: Routes = [
 
   {
     path: 'auth',
-    loadChildren: () =>
-      import('./features/auth/auth.module').then(m => m.AuthModule),
+    loadChildren: () => import('./features/auth/auth.module').then(m => m.AuthModule),
+    data: { preload: true },
   },
 
-  // {
-  //   path: 'admin',
-  //   loadChildren: () =>
-  //     import('./pages/pages.module').then(m => m.PagesModule),
-  //     canActivate: [AuthGuard],
-  // },
+  {
+    path: 'admin',
+    loadChildren: () => import('./layout/layout.module').then(m => m.LayoutModule),
+    data: { preload: true },
+  },
 
   // fallback
   { path: '**', redirectTo: 'auth/login' },
