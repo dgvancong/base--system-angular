@@ -8,6 +8,10 @@ import { AuthFormComponent } from './components/auth-form/auth-form.component';
 import { IconCustomService } from '../../core/services/icon/icon-system.service';
 import { NzIconModule } from 'ng-zorro-antd/icon';
 import { FormsModule } from '@angular/forms';
+import { NzFormModule } from 'ng-zorro-antd/form';
+import { NzInputModule } from 'ng-zorro-antd/input';
+import { NzButtonModule } from 'ng-zorro-antd/button';
+import { NzMessageModule } from 'ng-zorro-antd/message';
 
 
 @NgModule({
@@ -21,7 +25,11 @@ import { FormsModule } from '@angular/forms';
     ReactiveFormsModule,
     FormsModule,
     AuthRoutingModule,
-    NzIconModule
+    NzIconModule,
+    NzFormModule,
+    NzInputModule,
+    NzButtonModule,
+    NzMessageModule
   ],
   providers: [
     IconCustomService

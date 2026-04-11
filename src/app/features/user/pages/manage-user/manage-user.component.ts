@@ -2,6 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { listUser, User } from '../../models/column/user';
 import { NzTableQueryParams } from 'ng-zorro-antd/table';
 import { ActivatedRoute, Router } from '@angular/router';
+import { UserInfo } from 'src/app/core/models/auth.model';
+import { AuthService } from 'src/app/features/auth/services/auth.service';
 
 @Component({
   selector: 'app-manage-user',
@@ -37,16 +39,19 @@ export class ManageUserComponent implements OnInit {
   pageIndex: number = 1;
   jumpPage: number = 1;
   typeNoResult: 'load' | 'search' = 'load';
-
   isDeleteRole: boolean = false;
+  currentUser: UserInfo | null = null;
 
   constructor(
     private router: Router,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private authService: AuthService
   ) { }
 
   ngOnInit(): void {
-
+    this.authService.currentUser$.subscribe(user => {
+      this.currentUser = user;
+    });
   }
 
   onItemChecked(data: any, checked: boolean): void {

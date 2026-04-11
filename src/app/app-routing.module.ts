@@ -1,5 +1,6 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
+import { AuthGuard } from './core/shared/guards/auth.guard';
 
 const routes: Routes = [
 
@@ -15,10 +16,12 @@ const routes: Routes = [
     path: 'admin',
     loadChildren: () => import('./layout/layout.module').then(m => m.LayoutModule),
     data: { preload: true },
+    canActivate: [AuthGuard]
   },
 
   // fallback
-  { path: '**', redirectTo: 'auth/login' },
+  { path: '', redirectTo: 'auth/login', pathMatch: 'full' },
+  { path: '**', redirectTo: 'auth/login' }
 ];
 
 @NgModule({

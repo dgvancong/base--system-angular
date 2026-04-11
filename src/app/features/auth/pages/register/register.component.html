@@ -25,49 +25,59 @@
           <h5 class="pb-2 fw8 mb-3">Đăng Ký</h5>
           <p>Bạn đã có tài khoản? <a href="/auth/login" class="text-success text-decoration-underline">Đăng nhập</a></p>
 
-          <form (ngSubmit)="onSubmit()">
+          <form nz-form [formGroup]="registerForm" (ngSubmit)="onSubmit()">
             <div class="row">
               <!-- Khối 1: Thông tin cá nhân - cột trái -->
               <div class="col-md-6">
                 <div class="info-box">
-                  <div class="form-group">
-                    <input
-                      type="text"
-                      class="form-control"
-                      id="fullName"
-                      [(ngModel)]="fullName"
-                      name="fullName"
-                      required
-                      placeholder="Họ và tên">
-                  </div>
-                  <div class="form-group">
-                    <input
-                      type="tel"
-                      class="form-control"
-                      id="phone"
-                      [(ngModel)]="phone"
-                      name="phone"
-                      placeholder="Số điện thoại">
-                  </div>
-                  <div class="form-group">
-                    <input
-                      type="text"
-                      class="form-control"
-                      id="address"
-                      [(ngModel)]="address"
-                      name="address"
-                      placeholder="Địa chỉ">
-                  </div>
 
-                  <div class="form-group">
-                    <input
-                      type="text"
-                      class="form-control"
-                      id="address"
-                      [(ngModel)]="address"
-                      name="address"
-                      placeholder="Phòng ban">
-                  </div>
+                  <!-- Họ và tên -->
+                  <nz-form-item>
+                    <nz-form-control [nzErrorTip]="UsernameErrorTpl">
+                      <input
+                        nz-input
+                        formControlName="username"
+                        placeholder="Họ và tên"
+                        class="form-control">
+                      <ng-template #UsernameErrorTpl let-control>
+                        <ng-container *ngIf="control.hasError('required')">Họ và tên là bắt buộc</ng-container>
+                        <ng-container *ngIf="control.hasError('maxlength')">Tối đa 100 ký tự</ng-container>
+                      </ng-template>
+                    </nz-form-control>
+                  </nz-form-item>
+
+                  <!-- Số điện thoại -->
+                  <nz-form-item>
+                    <nz-form-control>
+                      <input
+                        nz-input
+                        formControlName="phone"
+                        placeholder="Số điện thoại"
+                        class="form-control">
+                    </nz-form-control>
+                  </nz-form-item>
+
+                  <!-- Địa chỉ -->
+                  <nz-form-item>
+                    <nz-form-control>
+                      <input
+                        nz-input
+                        formControlName="address"
+                        placeholder="Địa chỉ"
+                        class="form-control">
+                    </nz-form-control>
+                  </nz-form-item>
+
+                  <!-- Phòng ban -->
+                  <nz-form-item>
+                    <nz-form-control>
+                      <input
+                        nz-input
+                        formControlName="department"
+                        placeholder="Phòng ban"
+                        class="form-control">
+                    </nz-form-control>
+                  </nz-form-item>
 
                 </div>
               </div>
@@ -75,41 +85,102 @@
               <!-- Khối 2: Thông tin đăng nhập - cột phải -->
               <div class="col-md-6">
                 <div class="info-box">
-                  <div class="form-group">
-                    <input
-                      type="email"
-                      class="form-control"
-                      id="email"
-                      [(ngModel)]="email"
-                      name="email"
-                      required
-                      placeholder="Email">
-                  </div>
-                  <div class="form-group">
-                    <input
-                      type="password"
-                      class="form-control"
-                      id="password"
-                      [(ngModel)]="password"
-                      name="password"
-                      required
-                      placeholder="Mật khẩu">
-                  </div>
-                  <div class="form-group">
-                    <input
-                      type="password"
-                      class="form-control"
-                      id="confirmPassword"
-                      [(ngModel)]="confirmPassword"
-                      name="confirmPassword"
-                      required
-                      placeholder="Xác nhận mật khẩu">
-                  </div>
+
+                  <!-- Email -->
+                  <nz-form-item>
+                    <nz-form-control [nzErrorTip]="emailErrorTpl">
+                      <input
+                        nz-input
+                        formControlName="email"
+                        placeholder="Email *"
+                        class="form-control">
+                      <ng-template #emailErrorTpl let-control>
+                        <ng-container *ngIf="control.hasError('required')">Email là bắt buộc</ng-container>
+                        <ng-container *ngIf="control.hasError('email')">Email không đúng định dạng</ng-container>
+                      </ng-template>
+                    </nz-form-control>
+                  </nz-form-item>
+
+                  <!-- Mật khẩu -->
+                  <nz-form-item>
+                    <nz-form-control>
+                      <input
+                        nz-input
+                        [type]="hidePassword ? 'password' : 'text'"
+                        formControlName="password"
+                        placeholder="Mật khẩu *"
+                        class="form-control">
+                      <span
+                        nz-icon
+                        [nzType]="hidePassword ? 'eye-invisible' : 'eye'"
+                        class="password-toggle"
+                        (click)="hidePassword = !hidePassword">
+                      </span>
+                    </nz-form-control>
+                  </nz-form-item>
+
+                  <!-- Xác nhận mật khẩu -->
+                  <nz-form-item>
+                    <nz-form-control [nzErrorTip]="confirmErrorTpl">
+                      <input
+                        nz-input
+                        formControlName="confirmPassword"
+                        placeholder="Xác nhận mật khẩu *"
+                        class="form-control">
+                      <span
+                        nz-icon
+                        [nzType]="hideConfirmPassword ? 'eye-invisible' : 'eye'"
+                        class="password-toggle"
+                        (click)="hideConfirmPassword = !hideConfirmPassword">
+                      </span>
+                      <ng-template #confirmErrorTpl let-control>
+                        <ng-container *ngIf="control.hasError('required')">Vui lòng xác nhận mật khẩu</ng-container>
+                        <ng-container *ngIf="registerForm.hasError('passwordMismatch') && control.value">
+                          Mật khẩu xác nhận không khớp
+                        </ng-container>
+                      </ng-template>
+                    </nz-form-control>
+                  </nz-form-item>
+
                 </div>
               </div>
             </div>
 
-            <button type="submit" class="btn-login border-0 w-100 cur-pointer fw5 text-white mt-3">Đăng Ký</button>
+            <!-- Password Requirements -->
+            <div class="password-requirements" *ngIf="registerForm.get('password')?.value">
+              <div class="requirement-title">Yêu cầu mật khẩu:</div>
+              <div class="requirement-list">
+                <div [class.valid]="hasUpperCase" [class.invalid]="!hasUpperCase">
+                  <span nz-icon [nzType]="hasUpperCase ? 'check-circle' : 'close-circle'"></span>
+                  Ít nhất 1 chữ hoa
+                </div>
+                <div [class.valid]="hasLowerCase" [class.invalid]="!hasLowerCase">
+                  <span nz-icon [nzType]="hasLowerCase ? 'check-circle' : 'close-circle'"></span>
+                  Ít nhất 1 chữ thường
+                </div>
+                <div [class.valid]="hasNumber" [class.invalid]="!hasNumber">
+                  <span nz-icon [nzType]="hasNumber ? 'check-circle' : 'close-circle'"></span>
+                  Ít nhất 1 số
+                </div>
+                <div [class.valid]="hasSpecialChar" [class.invalid]="!hasSpecialChar">
+                  <span nz-icon [nzType]="hasSpecialChar ? 'check-circle' : 'close-circle'"></span>
+                  Ít nhất 1 ký tự đặc biệt (@$!%*?&)
+                </div>
+                <div [class.valid]="hasMinLength" [class.invalid]="!hasMinLength">
+                  <span nz-icon [nzType]="hasMinLength ? 'check-circle' : 'close-circle'"></span>
+                  Ít nhất 6 ký tự
+                </div>
+              </div>
+            </div>
+
+            <!-- Nút đăng ký -->
+            <button
+              type="submit"
+              class="btn-login border-0 w-100 cur-pointer fw5 text-white mt-3"
+              [disabled]="registerForm.invalid || isLoading">
+              <span *ngIf="isLoading" nz-icon nzType="loading" class="me-2"></span>
+              {{ isLoading ? 'Đang xử lý...' : 'Đăng Ký' }}
+            </button>
           </form>
 
           <div class="login-footer">

@@ -25,28 +25,58 @@
           <h5 class="pb-2 fw8 mb-3">Đăng Nhập</h5>
           <p>Bạn chưa có tài khoản? <a href="/auth/register" class="text-success text-decoration-underline">Tạo tài khoản</a></p>
 
-          <form (ngSubmit)="onSubmit()">
+          <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
             <div class="form-group">
               <input
                 type="email"
                 class="form-control"
+                [class.is-invalid]="f['email'].invalid && f['email'].touched"
+                formControlName="email"
                 id="email"
-                [(ngModel)]="email"
                 name="email"
                 required
                 placeholder="Tài khoản">
+              <div class="invalid-feedback" *ngIf="f['email'].invalid && f['email'].touched">
+                <span *ngIf="f['email'].errors?.['required']">Email is required</span>
+                <span *ngIf="f['email'].errors?.['email']">Invalid email format</span>
+              </div>
             </div>
             <div class="form-group">
               <input
                 type="password"
                 class="form-control"
+                [class.is-invalid]="f['password'].invalid && f['password'].touched"
                 id="password"
-                [(ngModel)]="password"
+                formControlName="password"
                 name="password"
                 required
                 placeholder="Mật khẩu">
+              <div class="invalid-feedback" *ngIf="f['password'].invalid && f['password'].touched">
+                <span *ngIf="f['password'].errors?.['required']">Password is required</span>
+                <span *ngIf="f['password'].errors?.['minlength']">Password must be at least 6 characters</span>
+              </div>
             </div>
-            <button type="submit" class="btn-login border-0 w-100 cur-pointer fw5 text-white">Đăng Nhập</button>
+
+            <!-- Remember Me -->
+            <div class="form-check">
+              <input
+                  type="checkbox"
+                  id="rememberMe"
+                  formControlName="rememberMe"
+                  class="form-check-input">
+              <label for="rememberMe" class="form-check-label">Ghi nhớ đăng nhập</label>
+            </div>
+
+            <!-- Error Message -->
+            <div class="alert alert-danger" *ngIf="errorMessage">
+              {{ errorMessage }}
+            </div>
+
+             <button type="submit" class="btn-login border-0 w-100 cur-pointer fw5 text-white" [disabled]="isLoading">
+                <span *ngIf="isLoading" class="spinner-border spinner-border-sm me-2"></span>
+                {{ isLoading ? 'Đang xử lý...' : 'Đăng nhập' }}
+            </button>
+
           </form>
 
           <div class="login-footer">

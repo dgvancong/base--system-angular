@@ -89,15 +89,15 @@
             nzType="ng-zorro:menu_notice_icon">
           </span>
         </button>
-        <div class="user-profile d-flex align-items-center gap-2 cur-pointer">
+        <div class="user-profile d-flex align-items-center gap-2 cur-pointer" nz-dropdown nzTrigger="click" [nzDropdownMenu]="usermenu">
           <div class="image">
             <img src="assets/image/jira-software-logo.png" alt="GoFinance Logo">
           </div>
           <div class="full-name">
-            <p class="p-0 m-0 fs4 fw5">Đồng Văn Công</p>
-            <p class="p-0 m-0 fs2 fw5">dongvancong24@gmail.com</p>
+            <p class="p-0 m-0 fs4 fw5">{{ currentUser?.username }}</p>
+            <p class="p-0 m-0 fs2 fw5">{{ currentUser?.email }}</p>
           </div>
-          <button nz-button class="border-0 p-2" nz-dropdown nzTrigger="click" [nzDropdownMenu]="usermenu">
+          <button nz-button class="border-0 p-2">
             <span
               style="font-size: 20px; color: transparent;"
               nz-icon
@@ -116,7 +116,7 @@
               </span>
               Hồ sơ cá nhân
             </li>
-            <li nz-menu-item class="d-flex align-items-center gap-2 p-2">
+            <li nz-menu-item class="d-flex align-items-center gap-2 p-2" (click)="showLogoutConfirm()">
               <span
                 style="font-size: 20px; color: transparent;"
                 nz-icon
@@ -136,3 +136,15 @@
 
   </div>
 </div>
+
+
+<!-- Modal xóa user -->
+<app-popup
+  [isVisiblePopup]="isLogout"
+  [type]="'warning'"
+  [nzMaskClosable]="true"
+  [label]="'Xác nhận đăng xuất'"
+  [contentText]="'Bạn có chắc chắn muốn đăng xuất khỏi hệ thống?'"
+  (onCancel)="!isLogout"
+  (onOk)="submitLogout()">
+</app-popup>

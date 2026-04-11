@@ -1,4 +1,4 @@
-.login-box{
+.login-box {
   max-width: 580px;
 }
 
@@ -6,4 +6,237 @@
   font-size: 20px;
   position: absolute;
   left: 12px;
+}
+
+.password-wrapper {
+  position: relative;
+  width: 100%;
+}
+
+.password-wrapper .form-control {
+  padding-right: 40px;
+}
+
+.password-toggle {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  cursor: pointer;
+  color: #999;
+  z-index: 1;
+}
+
+.password-toggle:hover {
+  color: #667eea;
+}
+
+.password-requirements {
+  background: #f8f9fa;
+  padding: 12px 16px;
+  border-radius: 8px;
+  margin-top: 16px;
+}
+
+.requirement-title {
+  font-size: 13px;
+  font-weight: 500;
+  margin-bottom: 8px;
+  color: #666;
+}
+
+.requirement-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.requirement-list div {
+  font-size: 12px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.requirement-list .valid {
+  color: #28a745;
+}
+
+.requirement-list .invalid {
+  color: #dc3545;
+}
+
+.text-danger {
+  color: #dc3545;
+  font-size: 12px;
+  margin-top: 5px;
+  display: block;
+}
+
+.btn-login {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: 6px;
+  padding: 12px;
+  font-weight: 500;
+  transition: all 0.3s;
+}
+
+.btn-login:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+}
+
+.btn-login:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.spinner-border {
+  display: inline-block;
+  width: 1rem;
+  height: 1rem;
+  border: 2px solid currentColor;
+  border-right-color: transparent;
+  border-radius: 50%;
+  animation: spinner 0.75s linear infinite;
+}
+
+@keyframes spinner {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.me-2 {
+  margin-right: 8px;
+}
+
+
+.form-group {
+  margin-bottom: 20px;
+  position: relative;
+}
+
+.form-control {
+  width: 100%;
+  padding: 12px 16px;
+  font-size: 14px;
+  border: 1px solid #e0e0e0;
+  border-radius: 10px;
+  background: white;
+  transition: all 0.3s ease;
+  outline: none;
+  font-family: inherit;
+}
+
+.form-control:focus {
+  border-color: #667eea;
+  box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+}
+
+.form-control:hover:not(:focus) {
+  border-color: #b8c5f0;
+}
+
+.form-control.ng-invalid.ng-touched {
+  border-color: #ff4d4f;
+  background-color: #fff2f0;
+}
+
+.form-control.ng-invalid.ng-touched:focus {
+  box-shadow: 0 0 0 4px rgba(255, 77, 79, 0.1);
+}
+
+.form-control.ng-valid.ng-touched {
+  border-color: #52c41a;
+}
+
+.form-control:disabled {
+  background-color: #f5f5f5;
+  cursor: not-allowed;
+}
+
+.password-wrapper {
+  position: relative;
+}
+
+.password-wrapper .form-control {
+  padding-right: 45px;
+}
+
+.password-toggle {
+  position: absolute;
+  right: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  cursor: pointer;
+  color: #999;
+  font-size: 18px;
+  transition: color 0.3s ease;
+  z-index: 2;
+}
+
+.password-toggle:hover {
+  color: #667eea;
+}
+
+.error-message {
+  color: #ff4d4f;
+  font-size: 12px;
+  margin-top: 6px;
+  display: block;
+  animation: fadeIn 0.3s ease;
+}
+
+.text-muted {
+  display: block;
+  font-size: 11px;
+  color: #999;
+  margin-top: 5px;
+}
+
+.password-requirements {
+  background: #f8f9fa;
+  border-radius: 10px;
+  padding: 15px;
+  margin-top: 15px;
+  border: 1px solid #e8e8e8;
+  animation: slideDown 0.3s ease;
+}
+
+.requirement-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 10px;
+}
+
+.requirement-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.requirement-list div {
+  font-size: 12px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 8px;
+  border-radius: 6px;
+  transition: all 0.2s ease;
+}
+
+.requirement-list .valid {
+  color: #52c41a;
+  background: #f6ffed;
+}
+
+.requirement-list .invalid {
+  color: #ff4d4f;
+  background: #fff2f0;
+}
+
+.requirement-list i {
+  font-size: 12px;
 }

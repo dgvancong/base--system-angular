@@ -9,6 +9,7 @@ import { NzButtonModule } from 'ng-zorro-antd/button';
 import { NzMenuModule } from 'ng-zorro-antd/menu';
 import { NzToolTipModule } from 'ng-zorro-antd/tooltip';
 import { NzDropDownModule } from 'ng-zorro-antd/dropdown';
+import { PopupModule } from '../core/components/popup/popup.module';
 
 @NgModule({
   declarations: [
@@ -22,7 +23,8 @@ import { NzDropDownModule } from 'ng-zorro-antd/dropdown';
     NzButtonModule,
     NzMenuModule,
     NzToolTipModule,
-    NzDropDownModule
+    NzDropDownModule,
+    PopupModule
   ],
   providers: [
     IconCustomService
