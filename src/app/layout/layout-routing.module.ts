@@ -17,7 +17,7 @@ const routes: Routes = [
         // canActivate: [AuthGuard]
       },
       {
-        path: 'manage-user',
+        path: 'manage-product',
         loadChildren: () => import('../features/user/user.module').then(m => m.UserModule),
       },
     ]

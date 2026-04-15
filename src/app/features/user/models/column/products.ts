@@ -25,7 +25,7 @@ export interface Product {
 
 export var listProduct: ColumnItem[] = [
   {
-    name: 'Mã sản phẩm',
+    name: 'Mã SP',
     key: 'productCode',
     hidden: false,
     listOfFilter: [],
@@ -45,7 +45,7 @@ export var listProduct: ColumnItem[] = [
     width: '250px'
   },
   {
-    name: 'Danh mục',
+    name: 'Loại sản phẩm',
     key: 'categoryName',
     hidden: false,
     listOfFilter: [],

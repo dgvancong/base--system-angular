@@ -165,7 +165,7 @@ export class ManageUserComponent implements OnInit {
     if (pageNumber >= 1 && pageNumber <= this.getTotalPages()) {
       this.page = pageNumber;
       this.pageIndex = pageNumber;
-      this.router.navigateByUrl(`/admin/manage-user/${this.page}`);
+      this.router.navigateByUrl(`/admin/manage-product/${this.page}`);
     }
   }
 
@@ -175,7 +175,7 @@ export class ManageUserComponent implements OnInit {
 
   showUserDetails(data: any): void {
     if (data?.id) {
-      this.router.navigateByUrl(`/admin/manage-user/details/${data?.id}`);
+      this.router.navigateByUrl(`/admin/manage-product/details/${data?.id}`);
     }
   }
 
