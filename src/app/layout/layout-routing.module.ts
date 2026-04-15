@@ -5,16 +5,21 @@ import { AuthGuard } from '../core/shared/guards/auth.guard';
 
 const routes: Routes = [
 
-  { path: '', pathMatch: 'full', redirectTo: 'admin/manage-user/all/1' },
+  { path: '', pathMatch: 'full', redirectTo: 'dashboard-chart' },
 
   {
     path: '',
     component: LayoutSystemComponent,
     children: [
       {
+        path: 'dashboard-chart',
+        loadChildren: () => import('../features/dashboard/dashboard.module').then(m => m.DashboardModule),
+        // canActivate: [AuthGuard]
+      },
+      {
         path: 'manage-user',
         loadChildren: () => import('../features/user/user.module').then(m => m.UserModule),
-        canActivate: [AuthGuard]
+        // canActivate: [AuthGuard]
       },
     ]
   }

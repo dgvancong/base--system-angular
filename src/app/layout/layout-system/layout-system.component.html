@@ -7,7 +7,7 @@
       <div class="sidebar-brand">
         <div class="logo fw7 d-flex gap-2" [class.hidden]="isCollapsed">
           <img src="assets/image/jira-software-logo.png" alt="GoFinance Logo">
-          <span *ngIf="!isCollapsed" class="mt-1">Cloudron</span>
+          <span *ngIf="!isCollapsed" class="mt-1">Clothing</span>
         </div>
       </div>
       <div class="wrapper">
@@ -22,44 +22,41 @@
             nz-tooltip
             nzTooltipPlacement="right"
             [nzTooltipTitle]="isCollapsed ? 'Dashboard' : ''"
-            class="fw5"
-            nzSelected>
+            class="fw5">
             <span style="font-size: 18px; color: transparent;" nz-icon nzType="ng-zorro:dashboard_icon"></span>
             <span>Dashboard</span>
           </li>
           <li
             nzOpen
             nz-submenu
+            nzTitle="Quản lý hoá đơn"
+            routerLink="/admin/dashboard-chart"
             class="fw5"
-            nzTitle="Quản lý người dùng"
-            nzIcon="team">
+            nzIcon="snippets"
+            nzSelected>
             <ul>
-              <li nz-menu-item class="fw5">Danh sách nhân viên</li>
-              <li nz-menu-item class="fw5">Hồ sơ nhân viên</li>
-              <li nz-menu-item class="fw5">Cấu trúc tổ chức</li>
-              <li nz-menu-item class="fw5">Đánh giá hiệu suất
-              </li>
+              <li nz-menu-item nzSelected>Danh sách hoá đơn</li>
             </ul>
           </li>
           <li
             nzOpen
             nz-submenu
-            nzTitle="Quản lý phòng ban"
             class="fw5"
-            nzIcon="setting">
+            nzTitle="Quản lý kho"
+            routerLink="/admin/manage-user"
+            nzIcon="team">
             <ul>
-              <li nz-menu-item>Danh sách phòng ban</li>
-              <li nz-menu-item>Phân bổ nhân sự</li>
-              <li
-                nz-submenu
-                nzTitle="Sơ đồ tổ chức"
-                class="fw5">
-                <ul>
-                  <li nz-menu-item>Option 11</li>
-                  <li nz-menu-item>Option 12</li>
-                </ul>
-              </li>
+              <li nz-menu-item class="fw5">Danh sách sản phẩm</li>
             </ul>
+          </li>
+          <li
+            nz-menu-item
+            nz-tooltip
+            nzTooltipPlacement="right"
+            [nzTooltipTitle]="isCollapsed ? 'Dashboard' : ''"
+            class="fw5">
+            <span style="font-size: 18px; color: transparent;" nz-icon nzType="ng-zorro:setting_icon"></span>
+            <span>Cài đặt</span>
           </li>
         </ul>
       </div>
@@ -73,7 +70,6 @@
           </span>
         </button>
       </div>
-
     </div>
   </div>
   <div class="main-content">
@@ -94,8 +90,8 @@
             <img src="assets/image/jira-software-logo.png" alt="GoFinance Logo">
           </div>
           <div class="full-name">
-            <p class="p-0 m-0 fs4 fw5">{{ currentUser?.username }}</p>
-            <p class="p-0 m-0 fs2 fw5">{{ currentUser?.email }}</p>
+            <p class="p-0 m-0 fs4 fw5">Clothing Warehouse</p>
+            <p class="p-0 m-0 fs2 fw5">ClothingWarehouse@gmail.com</p>
           </div>
           <button nz-button class="border-0 p-2">
             <span
@@ -131,9 +127,8 @@
 
     <!-- Content Area -->
     <div class="content-area p-4">
-      <router-outlet> </router-outlet>
+      <router-outlet></router-outlet>
     </div>
-
   </div>
 </div>
 
@@ -145,6 +140,6 @@
   [nzMaskClosable]="true"
   [label]="'Xác nhận đăng xuất'"
   [contentText]="'Bạn có chắc chắn muốn đăng xuất khỏi hệ thống?'"
-  (onCancel)="!isLogout"
+  (onCancel)="cancelLogout()"
   (onOk)="submitLogout()">
 </app-popup>

@@ -34,14 +34,18 @@ export class LayoutSystemComponent implements OnInit {
     this.isCollapsed = !this.isCollapsed;
   }
 
-   showLogoutConfirm(): void {
+  showLogoutConfirm(): void {
     this.isLogout = true;
   }
 
+  cancelLogout(): void {
+    this.isLogout = false;
+  }
+
   submitLogout(): void {
-    this.authService.logout();
-    setTimeout(() => {
-      this.router.navigate(['/login']);
-    }, 500);
+    // this.authService.logout();
+    // setTimeout(() => {
+    //   this.router.navigate(['/login']);
+    // }, 500);
   }
 }

@@ -1,0 +1,47 @@
+.dashboard-header {
+  background: white;
+  border-radius: 1.5rem;
+  padding: 1.25rem 1.75rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+  margin-bottom: 1.5rem;
+}
+.filter-bar {
+  transition: all 0.2s;
+  border: 1px solid #f0f0f0;
+}
+.stat-card {
+  transition: transform 0.2s, box-shadow 0.2s;
+  cursor: default;
+  &:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.08);
+  }
+}
+.chart-container {
+  transition: all 0.2s;
+}
+.table th {
+  font-weight: 600;
+  color: #2c3e50;
+  border-top: none;
+}
+:host ::ng-deep .ant-select-selector,
+:host ::ng-deep .ant-picker {
+  border-radius: 12px !important;
+  border: 1px solid #e9ecef;
+  padding: 8px 12px;
+  height: auto;
+}
+:host ::ng-deep .ant-tag {
+  border-radius: 30px;
+  padding: 4px 12px;
+  font-weight: 500;
+}
+@media (max-width: 768px) {
+  body {
+    padding: 12px;
+  }
+  .stat-card h3 {
+    font-size: 1.5rem;
+  }
+}

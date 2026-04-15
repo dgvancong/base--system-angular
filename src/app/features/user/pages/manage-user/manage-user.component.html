@@ -5,15 +5,20 @@
       <p class="m-0 fw5 fs4"> Danh sách người dùng</p>
     </div>
     <div class="action d-flex gap-3">
-      <button nz-button class="border-0 excel fw5 p-2 rounded-2 d-flex align-items-center gap-2">
-        <span
-          style="font-size: 20px; color: transparent;"
-          nz-icon
-          nzType="ng-zorro:excel_icon">
-        </span>
-        Tải xuống bằng Excel
-      </button>
-      <button nz-button nzType="primary" class="border-0 add fw5 p-2 rounded-2 text-white d-flex align-items-center gap-2">
+
+      <!-- Tìm kiếm -->
+      <div class="search-wrapper">
+        <app-input
+          [width]="'320px'"
+          [searchText]="searchTerm"
+          [placeholder]="'Tìm kiếm bằng tên vai trò'"
+          (onSearch)="handleOnSearch($event)"
+          (onClear)="handleOnClear()">
+        </app-input>
+      </div>
+
+      <!-- Thêm mới -->
+      <button nz-button nzType="primary" class="border-0 add fw5 p-2 rounded-2 text-white d-flex align-items-center" (click)="showAddResourcesUser()">
         <span
           style="font-size: 20px; color: transparent;"
           nz-icon
@@ -21,14 +26,152 @@
         </span>
         Thêm mới
       </button>
-      <button nz-button class="border-0 filter fw5 p-2 rounded-2 d-flex align-items-center gap-2">
+
+      <!-- Thanh toán -->
+      <button *ngIf="bodyDataProductadd?.length" nz-button nzType="primary" class="border-0 add fw5 p-2 rounded-2 text-white d-flex align-items-center" (click)="showPayment()">
         <span
           style="font-size: 20px; color: transparent;"
           nz-icon
-          nzType="ng-zorro:filter_icon">
+          nzType="ng-zorro:card_icon">
         </span>
-        Bộ lọc
+        Thanh toán
       </button>
+
+      <!-- Bộ lọc -->
+      <div class="position-relative" (click)="$event.stopPropagation()">
+        <button
+          nz-button
+          class="border-0 filter fw5 p-2 rounded-2 d-flex align-items-center gap-2"
+          (click)="toggleDropdown()">
+          <span
+            style="font-size: 20px; color: transparent;"
+            nz-icon
+            nzType="ng-zorro:filter_icon">
+          </span>
+          Bộ lọc
+          <span *ngIf="hasActiveFilters" class="active-filter-badge"></span>
+        </button>
+        <!-- Dropdown Menu -->
+        <div *ngIf="isDropdownOpen" class="filter-dropdown" [ngClass]="{'show': isDropdownOpen}">
+          <div class="dropdown-header">
+            <h5 class="mb-0">Bộ lọc sản phẩm</h5>
+            <button nz-button nzType="link" (click)="clearAllFilters()" class="clear-all-btn">
+              Xóa tất cả
+            </button>
+          </div>
+
+          <div class="dropdown-content">
+            <!-- Product Type Filter - Changed to Select -->
+            <div class="filter-section">
+              <h6 class="filter-title">Loại sản phẩm</h6>
+              <nz-select
+                (click)="$event.stopPropagation()"
+                (mousedown)="$event.stopPropagation()"
+                nzShowSearch
+                nzAllowClear
+                nzPlaceHolder="Chọn loại sản phẩm"
+                [(ngModel)]="selectedProductType"
+                (ngModelChange)="onFilterChange()"
+                class="w-100">
+                <nz-option nzValue="dien-thoai" nzLabel="Điện thoại"></nz-option>
+                <nz-option nzValue="laptop" nzLabel="Laptop"></nz-option>
+                <nz-option nzValue="tai-nghe" nzLabel="Tai nghe"></nz-option>
+                <nz-option nzValue="phu-kien" nzLabel="Phụ kiện"></nz-option>
+                <nz-option nzValue="may-tinh-bang" nzLabel="Máy tính bảng"></nz-option>
+                <nz-option nzValue="dong-ho-thong-minh" nzLabel="Đồng hồ thông minh"></nz-option>
+                <nz-option nzValue="loa" nzLabel="Loa"></nz-option>
+                <nz-option nzValue="camera" nzLabel="Camera"></nz-option>
+              </nz-select>
+            </div>
+
+            <!-- Color Filter with Color Codes - Scrollable -->
+            <div class="filter-section">
+              <h6 class="filter-title">Màu sắc</h6>
+              <div class="color-options-wrapper">
+                <div class="color-options">
+                  <div
+                    *ngFor="let color of colors"
+                    class="color-item"
+                    [class.active]="isColorSelected(color.value)"
+                    (click)="toggleColor(color.value)">
+                    <div
+                      class="color-box"
+                      [style.backgroundColor]="color.code"
+                      [title]="color.name">
+                      <span *ngIf="isColorSelected(color.value)" class="check-icon">✓</span>
+                    </div>
+                    <span class="color-name">{{ color.name }}</span>
+                    <div class="color-code-badge">{{ color.code }}</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Price Range Filter -->
+            <div class="filter-section">
+              <h6 class="filter-title">Khoảng giá</h6>
+              <div class="price-range">
+                <nz-slider
+                  nzRange
+                  [nzMin]="0"
+                  [nzMax]="30000000"
+                  [nzStep]="500000"
+                  [nzTipFormatter]="formatSliderTip"
+                  [(ngModel)]="priceRange"
+                  (ngModelChange)="onPriceChange()">
+                </nz-slider>
+                <div class="price-values">
+                  <div class="price-input-group">
+                    <span class="price-currency">đ</span>
+                    <input
+                      nz-input
+                      type="text"
+                      nzSize="small"
+                      [value]="(priceRange[0] | number:'1.0-0')"
+                      (input)="onPriceInput($event, 0)"
+                      class="price-input">
+                  </div>
+                  <span class="price-separator">-</span>
+                  <div class="price-input-group">
+                    <span class="price-currency">đ</span>
+                    <input
+                      nz-input
+                      type="text"
+                      nzSize="small"
+                      [value]="(priceRange[1] | number:'1.0-0')"
+                      (input)="onPriceInput($event, 1)"
+                      class="price-input">
+                  </div>
+                </div>
+                <div class="price-presets">
+                  <button
+                    *ngFor="let preset of pricePresets"
+                    nz-button
+                    nzSize="small"
+                    (click)="applyPricePreset(preset)">
+                    {{ preset.label }}
+                  </button>
+                </div>
+                <div class="price-presets">
+                  <button
+                    *ngFor="let preset of pricePresets"
+                    nz-button
+                    nzSize="small"
+                    (click)="applyPricePreset(preset)">
+                    {{ preset?.label }}
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- Filter Actions -->
+          <div class="filter-actions">
+            <button nz-button (click)="cancelFilters()">Hủy</button>
+            <button nz-button nzType="primary" (click)="applyFilters()">Áp dụng</button>
+          </div>
+        </div>
+      </div>
+
     </div>
   </div>
 
@@ -38,21 +181,14 @@
       [nzShowPagination]="false"
       [nzFrontPagination]="false"
       [nzLoading]="loading"
-      [nzTotal]="total"
+      [nzTotal]="totalCount"
       [nzData]="listOfData"
       [nzPageSize]="pageSize"
       [nzPageIndex]="pageIndex"
       [nzNoResult]="noResultTemplate"
-      (nzCurrentPageDataChange)="onCurrentPageDataChange($event)"
-      (nzQueryParams)="onQueryParamsChange($event)"
       class="border-shadow radius-8">
       <thead>
         <tr>
-          <th
-            [nzChecked]="checked"
-            [nzIndeterminate]="indeterminate"
-            (nzCheckedChange)="onAllChecked($event)">
-          </th>
           <ng-container
             *ngFor="let colum of listColumnsUserDisplay; index as i"
             [ngSwitch]="i">
@@ -74,63 +210,83 @@
         </tr>
       </thead>
       <tbody>
-        <tr *ngFor="let data of UserTable.data"
-          [class.selected]="setOfCheckedId.has(data?.id)">
-          <td
-            style="height: 58px; width: 58px;"
-            class="border-bottom"
-            [nzChecked]="setOfCheckedId.has(data?.id)"
-            (nzCheckedChange)="onItemChecked(data, $event)">
-          </td>
-          <td
-            class="text-ghost td-custom">
-            {{data.joinDate}}
-          </td>
-          <td
-            style=" color: #828181; max-width: 324px;"
-            class="text-ghost td-custom">
-            <!-- <div class="column-email">
-              <ng-container
-                *ngIf="data?.avatarUrl; else textAvatar">
-                <nz-avatar
-                  style="border: 1px solid; width: 44px; height: 44px; margin-right: 10px;"
-                  [nzSrc]="data?.avatarUrl"
-                  class="avatar-url">
-                </nz-avatar>
-              </ng-container>
-              <ng-template #textAvatar>
-                <nz-avatar
-                  style="margin-right: 10px;"
-                  [nzText]="data?.displayName : 'SR'"
-                  class="avatar-user">
-                </nz-avatar>
-              </ng-template>
-            </div> -->
-          </td>
-          <td
-            class="text-ghost td-custom">
-            {{data.email}}
+        <tr *ngFor="let data of UserTable.data">
+          <td class="text-ghost td-custom">
+            {{data?.productCode}}
           </td>
           <td class="text-ghost td-custom">
-            {{data.phone}}
-          </td>
-          <td class="text-ghost td-custom ">
-            {{data.department}}
+            {{data?.productName}}
           </td>
           <td class="text-ghost td-custom">
-            {{data.jobPosition}}
+            {{data?.categoryName}}
           </td>
           <td class="text-ghost td-custom">
-            {{data.status}}
+            {{data?.brandName}}
+          </td>
+          <td class="text-ghost td-custom color-cell">
+            <div class="color-tags" *ngIf="data?.color; else noColor">
+              <nz-tag *ngFor="let colorName of parseColors(data.color)" class="color-tag">
+                <span class="color-dot"
+                      [style.backgroundColor]="getColorCode(colorName)"
+                      [style.border]="colorName === 'Trắng' ? '1px solid #ddd' : 'none'">
+                </span>
+                {{ colorName }}
+              </nz-tag>
+            </div>
+            <ng-template #noColor>
+              <span class="text-muted">—</span>
+            </ng-template>
+          </td>
+          <td class="text-ghost td-custom">
+            {{data?.size}}
+          </td>
+          <td class="text-ghost td-custom">
+            <div class="price-display d-flex align-items-center gap-3">
+              <span class="price-value">
+                {{ getDisplayPurchasePrice(data) }}
+              </span>
+              <span
+                nz-icon
+                [nzType]="isShowPurchasePrice(data.productID) ? 'eye' : 'eye-invisible'"
+                class="eye-icon cur-pointer"
+                nz-tooltip
+                [nzTooltipTitle]="isShowPurchasePrice(data.productID) ? 'Ẩn giá nhập' : 'Hiện giá nhập'"
+                (click)="togglePurchasePrice(data.productID)">
+              </span>
+            </div>
+          </td>
+          <td class="text-ghost td-custom">
+            {{ formatPrice(data?.sellingPrice) }}
+          </td>
+          <td class="text-ghost td-custom">
+            {{data?.quantityInStock}}
+          </td>
+         <td class="text-ghost td-custom">
+            <span class="status-badge" [ngClass]="getStatusClass(data?.status)">
+              <span class="status-dot"></span>
+              {{ data.status || 'Đang bán' }}
+            </span>
           </td>
           <td class="text-ghost td-custom text-center">
-            <div class="action d-flex align-items-center justify-content-center gap-3 cur-pointer">
+            <div class="action d-flex align-items-center justify-content-center gap-4 cur-pointer">
 
-              <span style="font-size: 18px; color: transparent;" nz-icon nzType="ng-zorro:bx_edit_icon"></span>
+              <span
+                style="font-size: 18px; color: transparent;"
+                nz-icon
+                nzType="ng-zorro:add_plus_icon"
+                nz-tooltip
+                nzTooltipTitle="Thêm sản phẩm"
+                (click)="addProductCatego(data)">
+              </span>
 
-              <span style="font-size: 18px; color: transparent;" nz-icon nzType="ng-zorro:bx_details_icon" (click)="showUserDetails(data)"></span>
-
-              <span style="font-size: 18px; color: transparent;" nz-icon nzType="ng-zorro:bx_delete_icon" (click)="showDeleteRole()"></span>
+              <span
+                style="font-size: 18px; color: transparent;"
+                nz-icon
+                nzType="ng-zorro:bx_delete_icon"
+                nz-tooltip
+                nzTooltipTitle="Xóa sản phẩm"
+                (click)="showDeleteRole(data.productID)">
+              </span>
 
             </div>
           </td>
@@ -143,7 +299,7 @@
               [data]="listOfDisplayData"
               [start]="start"
               [end]="end"
-              [total]="total"
+              [total]="totalCount"
               [page]="page"
               [pageSize]="pageSize"
               [pageSizeOptions]="pageSizeOptions"
@@ -160,9 +316,9 @@
   <ng-template #noResultTemplate>
     <app-content-follow
       [typeIcon]="'clasic'"
-      [labelFollow]="'Danh sách người dùng trống '"
-      [contentFollow]="'Bạn có thể thêm người dùng vào hệ thống'"
-      [labelFollowSearch]="'Không tìm thấy kết quả người dùng'"
+      [labelFollow]="'Danh sách sản phẩm trống '"
+      [contentFollow]="'Bạn có thể thêm sản phẩm vào hệ thống'"
+      [labelFollowSearch]="'Không tìm thấy kết quả sản phẩm'"
       [contentFollowSearch]="'Thông tin bạn đang tìm kiếm không tồn tại'"
       [type]="typeNoResult">
     </app-content-follow>
@@ -170,14 +326,123 @@
 
 </div>
 
-
 <!-- Modal xóa user -->
 <app-popup
   [isVisiblePopup]="isDeleteRole"
   [type]="'warning'"
   [nzMaskClosable]="true"
-  [label]="'Xóa người dùng'"
-  [contentText]="'Người dùng bị xóa sẽ không thể sử dụng cho người dùng. Bạn chắc chắn muốn xóa người dùng?'"
+  [label]="'Xóa sản phẩm'"
+  [contentText]="'Sản phẩm bị xóa sẽ không thể khôi phục. Bạn chắc chắn muốn xóa sản phẩm?'"
   (onCancel)="canceDeleteRole()"
   (onOk)="submitDeleteRole()">
 </app-popup>
+
+<!-- Thêm thông tin sản phẩm -->
+<nz-modal
+  [(nzVisible)]="isResoucesUserAdd"
+  [nzCloseIcon]="''"
+  [nzFooter]="null"
+  [nzClosable]="false"
+  [nzMaskClosable]="true"
+  [nzWidth]="800"
+  (nzOnCancel)="cancelResoucesUserAdd()">
+  <ng-container *nzModalContent>
+    <app-user-add
+      (cancelModal)="cancelResoucesUserAdd()">
+    </app-user-add>
+  </ng-container>
+</nz-modal>
+
+
+<!-- Thêm thông tin sản phẩm giỏ hàng -->
+<nz-modal
+  [(nzVisible)]="addinvoice"
+  [nzCloseIcon]="''"
+  [nzFooter]="null"
+  [nzClosable]="false"
+  [nzMaskClosable]="true"
+  [nzWidth]="800"
+  (nzOnCancel)="cancelInvoiceAdd()">
+  <ng-container *nzModalContent>
+    <div class="modal-body">
+      <div class="content-header d-flex align-items-center justify-content-between pb-2">
+        <h6 class="content-header_h6 m-0 fw6 fs8">
+          Danh sách sản phẩm
+        </h6>
+        <button class="content-header-button d-flex align-items-center justify-content-between rounded-2 border-0 bg-transparent" (click)="cancelInvoiceAdd()">
+          <span style="font-size: 20px;" nz-icon nzType="ng-zorro:del_icon" nzTheme="outline"></span>
+        </button>
+      </div>
+        <div class="cart-items-list overflow-y-auto pe-2" *ngIf="bodyDataProductadd.length > 0; else emptyCart">
+          <div class="cart-item" *ngFor="let item of bodyDataProductadd; let i = index">
+            <div class="d-flex align-items-center gap-3 p-3 mb-3 rounded-2 justify-content-between">
+              <div class="item-details">
+                <div class="item-name fs4 mb-2">
+                  <strong>{{ item.productName }}</strong>
+                  <span class="item-code ms-2 fs2">({{ item.productCode }})</span>
+                </div>
+                <div class="item-attributes d-flex flex-wrap gap-3 mb-2">
+                  <span class="attribute fs2" *ngIf="item.color">
+                    <span nz-icon nzType="bg-colors" class="me-1 fs2"></span>
+                    Màu: {{ item.color }}
+                  </span>
+                  <span class="attribute fs2" *ngIf="item.size">
+                    <span nz-icon nzType="api" class="me-1 fs2"></span>
+                    Size: {{ item.size }}
+                  </span>
+                  <span class="attribute fs2" *ngIf="item.categoryName">
+                    <span nz-icon nzType="appstore" class="me-1 fs2"></span>
+                    Loại: {{ item.categoryName }}
+                  </span>
+                </div>
+                <div class="item-price fs2">
+                  Đơn giá: <strong>{{ formatPrice(item.sellingPrice) }}</strong>
+                </div>
+              </div>
+              <div class="item-quantity">
+                 <nz-input-number
+                  [(ngModel)]="purchaseQuantities[item.productID]"
+                  [nzMin]="1"
+                  [nzMax]="item.quantityInStock"
+                  (ngModelChange)="updateQuantity(item.productID, $event)"
+                  class="quantity-input">
+                </nz-input-number>
+              </div>
+            </div>
+            <div class="d-flex align-items-center justify-content-end gap-3 pt-4 filter-actions">
+              <button nz-button class=" text-center content-header-button d-flex align-items-center justify-content-center rounded-2" (click)="cancelInvoiceAdd()">
+                Huỷ
+              </button>
+              <button nz-button class="content-header-button d-flex align-items-center justify-content-center rounded-2 border-0 text-center" [nzType]="'primary'" (click)="addToCart(item)" >
+                Thêm mới
+              </button>
+            </div>
+          </div>
+        </div>
+        <ng-template #emptyCart>
+          <div class="empty-cart text-center">
+            <span nz-icon nzType="shopping-cart" class="mb-3" nzTheme="outline"></span>
+            <p class="fs6 mb-4">Giỏ hàng của bạn đang trống</p>
+            <button nz-button>Tiếp tục mua sắm</button>
+          </div>
+        </ng-template>
+    </div>
+  </ng-container>
+</nz-modal>
+
+<!-- Giỏ hàng sản phẩm -->
+<nz-modal
+  [(nzVisible)]="isPayment"
+  [nzCloseIcon]="''"
+  [nzFooter]="null"
+  [nzClosable]="false"
+  [nzMaskClosable]="true"
+  [nzWidth]="1200"
+  (nzOnCancel)="cancelPayment()">
+  <ng-container *nzModalContent>
+    <app-user-details
+      [data]="bodyDataProduct"
+      (cancelModal)="cancelPayment()">
+    </app-user-details>
+  </ng-container>
+</nz-modal>

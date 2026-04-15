@@ -24,7 +24,7 @@ import { PopupModule } from '../core/components/popup/popup.module';
     NzMenuModule,
     NzToolTipModule,
     NzDropDownModule,
-    PopupModule
+    PopupModule,
   ],
   providers: [
     IconCustomService

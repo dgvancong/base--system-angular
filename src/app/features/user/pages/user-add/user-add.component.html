@@ -1,1 +1,247 @@
-<p>user-add works!</p>
+<div class="modal-body">
+  <div class="content-header d-flex align-items-center justify-content-between pb-2">
+    <h6 class="content-header_h6 m-0 fw6 fs8">
+      Danh sách video sử dụng tài nguyên
+    </h6>
+    <button class="content-header-button d-flex align-items-center justify-content-between rounded-2 border-0" (click)="handleCancel()">
+      <span style="font-size: 20px;" nz-icon nzType="ng-zorro:del_icon" nzTheme="outline"></span>
+    </button>
+  </div>
+  <div class="main-content pt-3">
+    <form nz-form [formGroup]="productForm" class="add-product-form overflow-y-auto">
+      <div class="row">
+        <!-- Cột trái -->
+        <div class="col-md-6">
+          <!-- Mã sản phẩm -->
+          <nz-form-item>
+            <nz-form-label [nzSpan]="24" class="p-0" nzRequired>Mã sản phẩm</nz-form-label>
+            <nz-form-control [nzSpan]="24" nzHasFeedback [nzErrorTip]="productCodeError">
+              <input
+                nz-input
+                formControlName="productCode"
+                placeholder="VD: SP001, ÁO123"
+                (blur)="onProductCodeBlur()">
+              <ng-template #productCodeError>
+                <ng-container *ngIf="productForm.get('productCode')?.hasError('required')">
+                  Vui lòng nhập mã sản phẩm
+                </ng-container>
+                <ng-container *ngIf="productForm.get('productCode')?.hasError('duplicate')">
+                  Mã sản phẩm đã tồn tại
+                </ng-container>
+              </ng-template>
+            </nz-form-control>
+          </nz-form-item>
+
+          <!-- Tên sản phẩm -->
+          <nz-form-item>
+            <nz-form-label class="p-0" [nzSpan]="24" nzRequired>Tên sản phẩm</nz-form-label>
+            <nz-form-control [nzSpan]="24" nzHasFeedback nzErrorTip="Vui lòng nhập tên sản phẩm">
+              <input nz-input formControlName="productName" placeholder="VD: Áo thun trắng cổ tròn">
+            </nz-form-control>
+          </nz-form-item>
+
+          <!-- Nhà cung cấp -->
+          <nz-form-item>
+            <nz-form-label class="p-0" [nzSpan]="24" nzRequired>Nhà cung cấp</nz-form-label>
+            <nz-form-control [nzSpan]="24" nzHasFeedback nzErrorTip="Vui lòng nhập Nhà cung cấp">
+              <input nz-input formControlName="supplierName" placeholder="VD: Kien Giang, An Phát, Việt Thắng">
+            </nz-form-control>
+          </nz-form-item>
+
+          <!-- Loại sản phẩm -->
+          <nz-form-item>
+            <nz-form-label class="p-0" [nzSpan]="24" nzRequired>Loại sản phẩm</nz-form-label>
+            <nz-form-control [nzSpan]="24" nzHasFeedback nzErrorTip="Vui lòng chọn loại sản phẩm">
+              <nz-select
+                formControlName="categoryName"
+                nzShowSearch
+                nzAllowClear
+                nzPlaceHolder="Chọn loại sản phẩm">
+                <nz-option nzValue="Áo" nzLabel="Áo"></nz-option>
+                <nz-option nzValue="Quần" nzLabel="Quần"></nz-option>
+                <nz-option nzValue="Váy" nzLabel="Váy"></nz-option>
+                <nz-option nzValue="Áo khoác" nzLabel="Áo khoác"></nz-option>
+                <nz-option nzValue="Phụ kiện" nzLabel="Phụ kiện"></nz-option>
+              </nz-select>
+            </nz-form-control>
+          </nz-form-item>
+
+          <!-- Màu sắc (Multiple Select) -->
+          <nz-form-item>
+            <nz-form-label class="p-0" [nzSpan]="24">Màu sắc</nz-form-label>
+            <nz-form-control [nzSpan]="24">
+              <div class="color-selector-wrapper w-100">
+                <nz-select
+                  formControlName="color"
+                  nzMode="multiple"
+                  nzAllowClear
+                  nzPlaceHolder="Chọn màu sắc (có thể chọn nhiều)"
+                  class="color-select w-100">
+                  <nz-option *ngFor="let color of colors" [nzValue]="color.name" [nzLabel]="color.name">
+                    <div class="color-option">
+                      <div class="color-dot" [style.backgroundColor]="color.code"></div>
+                      <span>{{ color.name }}</span>
+                      <span class="color-code">{{ color.code }}</span>
+                    </div>
+                  </nz-option>
+                </nz-select>
+
+                <!-- Hiển thị các màu đã chọn -->
+                <div class="selected-colors d-flex flex-wrap gap-2 mt-3" *ngIf="productForm.get('color')?.value?.length > 0">
+                  <div class="selected-color-tag d-inline-flex align-items-center gap-2 rounded-3 fs4" *ngFor="let colorName of productForm.get('color')?.value">
+                    <div class="color-preview" [style.backgroundColor]="getColorCode(colorName)"></div>
+                    <span>{{ colorName }}</span>
+                    <span class="color-code-text">{{ getColorCode(colorName) }}</span>
+                    <span nz-icon nzType="close" (click)="removeColor(colorName)"></span>
+                  </div>
+                </div>
+              </div>
+            </nz-form-control>
+          </nz-form-item>
+
+          <!-- Kích thước -->
+          <nz-form-item>
+            <nz-form-label class="p-0" [nzSpan]="24">Kích thước</nz-form-label>
+            <nz-form-control [nzSpan]="24">
+              <nz-select
+                formControlName="size"
+                nzAllowClear
+                nzPlaceHolder="Chọn kích thước">
+                <nz-option nzValue="S" nzLabel="S"></nz-option>
+                <nz-option nzValue="M" nzLabel="M"></nz-option>
+                <nz-option nzValue="L" nzLabel="L"></nz-option>
+                <nz-option nzValue="XL" nzLabel="XL"></nz-option>
+                <nz-option nzValue="XXL" nzLabel="XXL"></nz-option>
+                <nz-option nzValue="FreeSize" nzLabel="FreeSize"></nz-option>
+              </nz-select>
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+
+        <!-- Cột phải -->
+        <div class="col-md-6">
+          <!-- Giá nhập -->
+          <nz-form-item>
+            <nz-form-label class="p-0" [nzSpan]="24" nzRequired>Giá nhập (VNĐ)</nz-form-label>
+            <nz-form-control [nzSpan]="24" nzHasFeedback nzErrorTip="Vui lòng nhập giá nhập">
+              <nz-input-number
+                formControlName="purchasePrice"
+                [nzMin]="0"
+                [nzStep]="1000"
+                [nzFormatter]="vndFormatter"
+                [nzParser]="vndParser"
+                class="w-100">
+              </nz-input-number>
+            </nz-form-control>
+          </nz-form-item>
+
+          <!-- Giá bán -->
+          <nz-form-item>
+            <nz-form-label class="p-0" [nzSpan]="24" nzRequired>Giá bán (VNĐ)</nz-form-label>
+            <nz-form-control [nzSpan]="24" nzHasFeedback [nzErrorTip]="sellingPriceError">
+              <nz-input-number
+                formControlName="sellingPrice"
+                [nzMin]="0"
+                [nzStep]="1000"
+                [nzFormatter]="vndFormatter"
+                [nzParser]="vndParser"
+                class="w-100">
+              </nz-input-number>
+              <ng-template #sellingPriceError>
+                <ng-container *ngIf="productForm.get('sellingPrice')?.hasError('required')">
+                  Vui lòng nhập giá bán
+                </ng-container>
+                <ng-container *ngIf="productForm.get('sellingPrice')?.hasError('min')">
+                  Giá bán phải lớn hơn giá nhập
+                </ng-container>
+              </ng-template>
+            </nz-form-control>
+          </nz-form-item>
+
+          <!-- Số lượng tồn kho -->
+          <nz-form-item>
+            <nz-form-label class="p-0" [nzSpan]="24">Số lượng tồn kho</nz-form-label>
+            <nz-form-control [nzSpan]="24">
+              <nz-input-number
+                formControlName="quantityInStock"
+                [nzMin]="0"
+                [nzStep]="1"
+                class="w-100">
+              </nz-input-number>
+            </nz-form-control>
+          </nz-form-item>
+
+          <!-- Thương hiệu  -->
+          <nz-form-item>
+            <nz-form-label class="p-0" [nzSpan]="24">Thương hiệu</nz-form-label>
+            <nz-form-control [nzSpan]="24">
+              <input nz-input formControlName="brandName" placeholder="VD: Nike, Adidas, Zara">
+            </nz-form-control>
+          </nz-form-item>
+
+          <!-- Chất liệu -->
+          <nz-form-item>
+            <nz-form-label class="p-0" [nzSpan]="24">Chất liệu</nz-form-label>
+            <nz-form-control [nzSpan]="24">
+              <input nz-input formControlName="material" placeholder="VD: Cotton 100%, Polyester, Jean">
+            </nz-form-control>
+          </nz-form-item>
+
+          <!-- Giới tính -->
+          <nz-form-item>
+            <nz-form-label class="p-0" [nzSpan]="24">Giới tính</nz-form-label>
+            <nz-form-control [nzSpan]="24">
+              <nz-radio-group formControlName="gender">
+                <label nz-radio nzValue="Nam">Nam</label>
+                <label nz-radio nzValue="Nữ">Nữ</label>
+                <label nz-radio nzValue="Unisex">Unisex</label>
+              </nz-radio-group>
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+      </div>
+
+      <!-- Trạng thái -->
+      <div class="row">
+        <div class="col-12">
+          <nz-form-item>
+            <nz-form-label class="p-0" [nzSpan]="24">Trạng thái</nz-form-label>
+            <nz-form-control [nzSpan]="24">
+              <nz-radio-group formControlName="status">
+                <label nz-radio nzValue="Đang bán">Đang bán</label>
+                <label nz-radio nzValue="Ngừng bán">Ngừng bán</label>
+                <label nz-radio nzValue="Hết hàng">Hết hàng</label>
+              </nz-radio-group>
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+      </div>
+
+      <!-- Mô tả -->
+      <div class="row">
+        <div class="col-12">
+          <nz-form-item>
+            <nz-form-label class="p-0" [nzSpan]="24">Mô tả sản phẩm</nz-form-label>
+            <nz-form-control [nzSpan]="24">
+              <textarea
+                nz-input
+                formControlName="description"
+                rows="4"
+                placeholder="Mô tả chi tiết về chất liệu, xuất xứ, hướng dẫn bảo quản..."></textarea>
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+      </div>
+    </form>
+  </div>
+
+  <div class="d-flex align-items-center justify-content-end gap-3 pt-4 filter-actions">
+   <button nz-button class=" text-center content-header-button d-flex align-items-center justify-content-center rounded-2" (click)="handleCancel()">
+      Huỷ
+    </button>
+    <button nz-button class="content-header-button d-flex align-items-center justify-content-center rounded-2 border-0 text-center" [nzType]="'primary'" >
+      Thêm mới
+    </button>
+  </div>
+
+</div>

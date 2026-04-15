@@ -1,9 +1,159 @@
-.user-details{
-  .header-action{
-    .breadcrumbs{
-      p{
-        color: #828282;
+.content-header {
+  border-bottom: 1px solid #ebebeb;
+  .content-header-button {
+    width: 40px;
+    gap: 2px;
+    padding: 6px;
+    background: transparent;
+    outline-color: transparent;
+  }
+}
+.cart-checkout-container {
+  max-height: 70vh;
+  .cart-items-column {
+    flex: 1.5;
+    .cart-items-list {
+      flex: 1;
+      &::-webkit-scrollbar {
+        width: 6px;
+      }
+      &::-webkit-scrollbar-track {
+        background: #f1f1f1;
+        border-radius: 10px;
+      }
+      &::-webkit-scrollbar-thumb {
+        background: #c1c1c1;
+        border-radius: 10px;
       }
     }
+    .cart-item {
+      background: #fafafa;
+      transition: all 0.3s;
+      &:hover {
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        background: white;
+      }
+      .item-details {
+        flex: 1;
+        .item-name {
+          .item-code {
+            color: #999;
+          }
+        }
+        .item-attributes {
+          .attribute {
+            color: #666;
+          }
+        }
+        .item-price {
+          color: #1890ff;
+        }
+      }
+      .item-quantity {
+        width: 100px;
+      }
+      .item-total {
+        min-width: 100px;
+        .total-label {
+          color: #999;
+        }
+        .total-amount {
+          color: #1890ff;
+        }
+      }
+      .item-actions {
+        flex-shrink: 0;
+        button {
+          color: #999;
+          &:hover {
+            color: #1890ff;
+          }
+        }
+      }
+    }
+    .empty-cart {
+      padding: 60px 20px;
+      span {
+        font-size: 64px;
+        color: #d9d9d9;
+      }
+      p {
+        color: #999;
+      }
+    }
+  }
+
+  .checkout-column {
+    flex: 1;
+    background: #fafafa;
+    padding: 20px;
+    &::-webkit-scrollbar {
+      width: 6px;
+    }
+    .checkout-summary {
+      .summary-row {
+        padding: 8px 0;
+        &.discount-row {
+          .discount-input-wrapper {
+            width: 30%;
+            .discount-currency {
+              color: #999;
+            }
+          }
+        }
+        &.total {
+          color: #1890ff;
+          border-top: 1px solid #e8e8e8;
+        }
+        .discount {
+          color: #1890ff;
+        }
+      }
+    }
+    .divider {
+      height: 1px;
+      background: #e8e8e8;
+      margin: 16px 0;
+    }
+    .customer-info {
+      h5 {
+        margin-bottom: 16px;
+        font-size: 14px;
+        font-weight: 600;
+      }
+      nz-form-item {
+        margin-bottom: 16px;
+      }
+    }
+    .checkout-actions {
+      button {
+        flex: 1;
+        height: 44px;
+      }
+    }
+  }
+}
+
+@media (max-width: 992px) {
+  .cart-checkout-container {
+    flex-direction: column;
+    max-height: none;
+    .cart-items-column {
+      max-height: 400px;
+    }
+    .checkout-column {
+      max-height: 500px;
+    }
+  }
+}
+
+::ng-deep {
+  .ant-modal {
+    .ant-modal-body {
+      padding: 24px;
+    }
+  }
+  .ant-input-number {
+    width: 100%;
   }
 }
