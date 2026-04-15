@@ -71,12 +71,12 @@ export class UserAddComponent implements OnInit {
     return null;
   }
 
-  vndFormatter = (value: number): string => {
+  vndFormatter = (value: any): string => {
     if (!value && value !== 0) return '0';
     return value.toLocaleString('vi-VN');
   }
 
-  vndParser = (value: any): number => {
+  vndParser = (value: any): any => {
     if (!value) return 0;
     const cleanValue = value.replace(/[^0-9]/g, '');
     return cleanValue ? parseInt(cleanValue) : 0;
