@@ -40,7 +40,7 @@ export var listProduct: ColumnItem[] = [
     hidden: false,
     listOfFilter: [],
     filterFn: null,
-    sortFn: true,
+    // sortFn: false,
     align: 'left',
     width: '250px'
   },
@@ -50,7 +50,7 @@ export var listProduct: ColumnItem[] = [
     hidden: false,
     listOfFilter: [],
     filterFn: null,
-    sortFn: true,
+    // sortFn: false,
     align: 'left',
     width: '120px'
   },
@@ -60,7 +60,7 @@ export var listProduct: ColumnItem[] = [
     hidden: false,
     listOfFilter: [],
     filterFn: null,
-    sortFn: true,
+    // sortFn: false,
     align: 'left',
     width: '120px'
   },
@@ -70,7 +70,7 @@ export var listProduct: ColumnItem[] = [
     hidden: false,
     listOfFilter: [],
     filterFn: null,
-    sortFn: false,
+    // sortFn: false,
     align: 'center',
     width: '100px'
   },
@@ -80,7 +80,7 @@ export var listProduct: ColumnItem[] = [
     hidden: false,
     listOfFilter: [],
     filterFn: null,
-    sortFn: false,
+    // sortFn: false,
     align: 'center',
     width: '80px'
   },
@@ -90,7 +90,7 @@ export var listProduct: ColumnItem[] = [
     hidden: false,
     listOfFilter: [],
     filterFn: null,
-    sortFn: true,
+    // sortFn: false,
     align: 'right',
     width: '120px'
   },
@@ -100,7 +100,7 @@ export var listProduct: ColumnItem[] = [
     hidden: false,
     listOfFilter: [],
     filterFn: null,
-    sortFn: true,
+    // sortFn: false,
     align: 'right',
     width: '120px'
   },
@@ -110,7 +110,7 @@ export var listProduct: ColumnItem[] = [
     hidden: false,
     listOfFilter: [],
     filterFn: null,
-    sortFn: true,
+    // sortFn: false,
     align: 'center',
     width: '100px'
   },
@@ -120,7 +120,7 @@ export var listProduct: ColumnItem[] = [
     hidden: true,
     listOfFilter: [],
     filterFn: null,
-    sortFn: false,
+    // sortFn: false,
     align: 'left',
     width: '100px'
   },
@@ -134,7 +134,7 @@ export var listProduct: ColumnItem[] = [
       { text: 'Unisex', value: 'Unisex' }
     ],
     filterFn: (value: string, filter: string) => value === filter,
-    sortFn: true,
+    // sortFn: true,
     align: 'center',
     width: '100px'
   },
@@ -148,7 +148,7 @@ export var listProduct: ColumnItem[] = [
       { text: 'Ngừng bán', value: 'Ngừng bán' }
     ],
     filterFn: (value: string, filter: string) => value === filter,
-    sortFn: true,
+    // sortFn: true,
     align: 'center',
     width: '100px'
   },
@@ -158,7 +158,7 @@ export var listProduct: ColumnItem[] = [
     hidden: true,
     listOfFilter: [],
     filterFn: null,
-    sortFn: true,
+    // sortFn: false,
     align: 'center',
     width: '120px'
   }

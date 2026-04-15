@@ -603,3 +603,46 @@
     }
   }
 }
+
+.table-scroll-wrapper {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  border-radius: 8px;
+  max-width: 100%;
+  width: 100%;
+
+  nz-table {
+    min-width: 100%;
+    width: 100%;
+    table-layout: auto;
+  }
+
+  nz-table ::ng-deep table {
+    width: 100%;
+    table-layout: fixed;
+  }
+
+  nz-table ::ng-deep tbody td,
+  nz-table ::ng-deep thead th {
+    white-space: nowrap;
+  }
+}
+
+/* Styling scrollbar */
+.table-scroll-wrapper::-webkit-scrollbar {
+  height: 8px;
+}
+
+.table-scroll-wrapper::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 4px;
+}
+
+.table-scroll-wrapper::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 4px;
+}
+
+.table-scroll-wrapper::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}

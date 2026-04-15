@@ -1,36 +1,32 @@
 import { Component, EventEmitter, OnInit, Output } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { IconDefinition } from '@ant-design/icons-angular';
-import { PlusOutline, CloseOutline, SearchOutline } from '@ant-design/icons-angular/icons';
-
-const antDesignIcons: IconDefinition[] = [
-  PlusOutline,
-  CloseOutline,
-  SearchOutline
-];
+import { NzMessageService } from 'ng-zorro-antd/message';
+import { ProductService } from '../../services/users.service';
 @Component({
   selector: 'app-user-add',
   templateUrl: './user-add.component.html',
-  styleUrls: ['./user-add.component.scss']
+  styleUrls: ['./user-add.component.scss'],
 })
 export class UserAddComponent implements OnInit {
-
-  productForm: FormGroup = this.fb.group({  // Khởi tạo ngay
-    productCode: ['', [Validators.required]],
-    productName: ['', [Validators.required]],
-    supplierName: ['', [Validators.required]],
-    categoryName: ['', [Validators.required]],
-    color: [[]],
-    size: [null],
-    purchasePrice: [0, [Validators.required, Validators.min(0)]],
-    sellingPrice: [0, [Validators.required, Validators.min(0)]],
-    quantityInStock: [0, [Validators.min(0)]],
-    description: [''],
-    brandName: [''],
-    material: [''],
-    gender: [null],
-    status: ['Đang bán']
-  }, { validators: this.priceValidator });
+  productForm: FormGroup = this.fb.group(
+    {
+      productCode: ['', [Validators.required]],
+      productName: ['', [Validators.required]],
+      supplierName: ['', [Validators.required]],
+      categoryName: ['', [Validators.required]],
+      color: [[]],
+      size: [null],
+      purchasePrice: [0, [Validators.required, Validators.min(0)]],
+      sellingPrice: [0, [Validators.required, Validators.min(0)]],
+      quantityInStock: [0, [Validators.min(0)]],
+      description: [''],
+      brandName: [''],
+      material: [''],
+      gender: [null],
+      status: ['Đang bán'],
+    },
+    { validators: this.priceValidator },
+  );
 
   colors = [
     { name: 'Đen', value: 'black', code: '#000000' },
@@ -46,19 +42,21 @@ export class UserAddComponent implements OnInit {
     { name: 'Nâu', value: 'brown', code: '#8B4513' },
     { name: 'Xanh ngọc', value: 'teal', code: '#008080' },
     { name: 'Vàng kim', value: 'gold', code: '#FFD700' },
-    { name: 'Bạc', value: 'silver', code: '#C0C0C0' }
+    { name: 'Bạc', value: 'silver', code: '#C0C0C0' },
   ];
 
+  loadingbutton: boolean = false;
+
   @Output() cancelModal = new EventEmitter<any>();
+  @Output() addSuccess = new EventEmitter<any>();
 
   constructor(
     private fb: FormBuilder,
-  ) {
-  }
+    private message: NzMessageService,
+    private productService: ProductService,
+  ) {}
 
-  ngOnInit(): void {
-
-  }
+  ngOnInit(): void {}
 
   priceValidator(group: FormGroup) {
     const purchasePrice = group.get('purchasePrice')?.value;
@@ -74,13 +72,13 @@ export class UserAddComponent implements OnInit {
   vndFormatter = (value: any): string => {
     if (!value && value !== 0) return '0';
     return value.toLocaleString('vi-VN');
-  }
+  };
 
   vndParser = (value: any): any => {
     if (!value) return 0;
     const cleanValue = value.replace(/[^0-9]/g, '');
     return cleanValue ? parseInt(cleanValue) : 0;
-  }
+  };
 
   onProductCodeBlur() {
     const productCode = this.productForm.get('productCode')?.value;
@@ -96,31 +94,40 @@ export class UserAddComponent implements OnInit {
     return false;
   }
 
-  handleOk() {
-    if (this.productForm.valid) {
-      const formValue = this.productForm.value;
-      const productData = {
-        ...formValue,
-        color: formValue.color ? formValue.color.join(',') : null,
-        createdDate: new Date(),
-        updatedDate: new Date()
-      };
-      console.log('Product data to submit:', productData);
-      this.addProduct(productData);
-    }
-    else {
-      Object.values(this.productForm.controls).forEach(control => {
-        control.markAsTouched();
-      });
-      console.log('Vui lòng điền đầy đủ thông tin bắt buộc');
-    }
-  }
-
-  addProduct(productData: any) {
-    setTimeout(() => {
-      this.resetForm();
-      this.loadProducts();
-    }, 1000);
+  handleOk(): void {
+    this.loadingbutton = true;
+    const formValue = this.productForm.value;
+    const productData = {
+      productCode: formValue.productCode,
+      productName: formValue.productName,
+      supplierName: formValue.supplierName,
+      categoryName: formValue.categoryName,
+      color: formValue.color ? formValue.color.join(',') : null,
+      size: formValue.size || null,
+      purchasePrice: formValue.purchasePrice,
+      sellingPrice: formValue.sellingPrice,
+      quantityInStock: formValue.quantityInStock,
+      description: formValue.description || null,
+      brandName: formValue.brandName || null,
+      material: formValue.material || null,
+      gender: formValue.gender || null,
+      status: formValue.status || 'Đang bán'
+    };
+    this.productService.createProduct(productData).subscribe(
+      (res)=>{
+        this.message.success('Thêm sản phẩm thành công');
+        this.resetForm();
+        this.handleCancel();
+        this.loadingbutton = false;
+        this.addSuccess.emit();
+      },
+      (error) => {
+        const errorMessage = error.error?.message || 'Thêm sản phẩm thất bại';
+        this.message.error(errorMessage);
+        this.handleCancel();
+        this.loadingbutton = false;
+      }
+    );
   }
 
   resetForm() {
@@ -138,35 +145,27 @@ export class UserAddComponent implements OnInit {
       brandName: null,
       material: '',
       gender: null,
-      status: 'Đang bán'
+      status: 'Đang bán',
     });
   }
 
-    // Lấy mã màu từ tên màu
   getColorCode(colorName: string): string {
-    const color = this.colors.find(c => c.name === colorName);
+    const color = this.colors.find((c) => c.name === colorName);
     return color ? color.code : '#000000';
   }
 
-    // Lấy giá trị màu
   getColorValue(colorName: string): string {
-    const color = this.colors.find(c => c.name === colorName);
+    const color = this.colors.find((c) => c.name === colorName);
     return color ? color.value : 'black';
   }
 
-  // Xóa màu đã chọn
   removeColor(colorName: string) {
     const currentColors = this.productForm.get('color')?.value || [];
     const newColors = currentColors.filter((c: string) => c !== colorName);
     this.productForm.get('color')?.setValue(newColors);
   }
 
-  loadProducts() {
-    // Load lại danh sách sản phẩm
-  }
-
   handleCancel() {
     this.cancelModal.emit();
   }
-
 }

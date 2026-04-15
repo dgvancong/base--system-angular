@@ -28,6 +28,7 @@ import { NzTagModule } from 'ng-zorro-antd/tag';
 import { InputModule } from 'src/app/core/components/input/input.module';
 import { NzSpinModule } from 'ng-zorro-antd/spin';
 import { NzMessageModule } from 'ng-zorro-antd/message';
+import { PerfectScrollbarModule } from 'ngx-perfect-scrollbar';
 
 @NgModule({
   declarations: [
@@ -61,7 +62,8 @@ import { NzMessageModule } from 'ng-zorro-antd/message';
     InputModule,
     NzSpinModule,
     NzMessageModule,
-  ],
+    PerfectScrollbarModule
+    ],
   providers: [
     IconCustomService
   ],

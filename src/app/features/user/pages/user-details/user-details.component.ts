@@ -22,7 +22,6 @@ export class UserDetailsComponent implements OnInit {
 
   ngOnInit(): void {
     this.cartItems = this.data || [];
-    console.log(this.cartItems);
   }
 
   formatPrice(price: number): string {

@@ -51,18 +51,8 @@
           <!-- Loại sản phẩm -->
           <nz-form-item>
             <nz-form-label class="p-0" [nzSpan]="24" nzRequired>Loại sản phẩm</nz-form-label>
-            <nz-form-control [nzSpan]="24" nzHasFeedback nzErrorTip="Vui lòng chọn loại sản phẩm">
-              <nz-select
-                formControlName="categoryName"
-                nzShowSearch
-                nzAllowClear
-                nzPlaceHolder="Chọn loại sản phẩm">
-                <nz-option nzValue="Áo" nzLabel="Áo"></nz-option>
-                <nz-option nzValue="Quần" nzLabel="Quần"></nz-option>
-                <nz-option nzValue="Váy" nzLabel="Váy"></nz-option>
-                <nz-option nzValue="Áo khoác" nzLabel="Áo khoác"></nz-option>
-                <nz-option nzValue="Phụ kiện" nzLabel="Phụ kiện"></nz-option>
-              </nz-select>
+            <nz-form-control [nzSpan]="24" nzHasFeedback nzErrorTip="Vui lòng nhập Loại sản phẩm">
+              <input nz-input formControlName="categoryName" placeholder="VD: Nhập loại sản phẩm hoặc chọn từ danh sách">
             </nz-form-control>
           </nz-form-item>
 
@@ -101,19 +91,9 @@
 
           <!-- Kích thước -->
           <nz-form-item>
-            <nz-form-label class="p-0" [nzSpan]="24">Kích thước</nz-form-label>
-            <nz-form-control [nzSpan]="24">
-              <nz-select
-                formControlName="size"
-                nzAllowClear
-                nzPlaceHolder="Chọn kích thước">
-                <nz-option nzValue="S" nzLabel="S"></nz-option>
-                <nz-option nzValue="M" nzLabel="M"></nz-option>
-                <nz-option nzValue="L" nzLabel="L"></nz-option>
-                <nz-option nzValue="XL" nzLabel="XL"></nz-option>
-                <nz-option nzValue="XXL" nzLabel="XXL"></nz-option>
-                <nz-option nzValue="FreeSize" nzLabel="FreeSize"></nz-option>
-              </nz-select>
+            <nz-form-label class="p-0" [nzSpan]="24" nzRequired>Kích thước</nz-form-label>
+            <nz-form-control [nzSpan]="24" nzHasFeedback nzErrorTip="Vui lòng nhập Kích thước">
+              <input nz-input formControlName="size" placeholder="VD: Nhập kích thước hoặc chọn từ danh sách">
             </nz-form-control>
           </nz-form-item>
         </div>
@@ -160,7 +140,7 @@
 
           <!-- Số lượng tồn kho -->
           <nz-form-item>
-            <nz-form-label class="p-0" [nzSpan]="24">Số lượng tồn kho</nz-form-label>
+            <nz-form-label class="p-0" [nzSpan]="24">Số lượng sản phẩm</nz-form-label>
             <nz-form-control [nzSpan]="24">
               <nz-input-number
                 formControlName="quantityInStock"
@@ -188,7 +168,7 @@
           </nz-form-item>
 
           <!-- Giới tính -->
-          <nz-form-item>
+          <!-- <nz-form-item>
             <nz-form-label class="p-0" [nzSpan]="24">Giới tính</nz-form-label>
             <nz-form-control [nzSpan]="24">
               <nz-radio-group formControlName="gender">
@@ -197,12 +177,12 @@
                 <label nz-radio nzValue="Unisex">Unisex</label>
               </nz-radio-group>
             </nz-form-control>
-          </nz-form-item>
+          </nz-form-item> -->
         </div>
       </div>
 
       <!-- Trạng thái -->
-      <div class="row">
+      <!-- <div class="row">
         <div class="col-12">
           <nz-form-item>
             <nz-form-label class="p-0" [nzSpan]="24">Trạng thái</nz-form-label>
@@ -215,7 +195,7 @@
             </nz-form-control>
           </nz-form-item>
         </div>
-      </div>
+      </div> -->
 
       <!-- Mô tả -->
       <div class="row">
@@ -239,7 +219,12 @@
    <button nz-button class=" text-center content-header-button d-flex align-items-center justify-content-center rounded-2" (click)="handleCancel()">
       Huỷ
     </button>
-    <button nz-button class="content-header-button d-flex align-items-center justify-content-center rounded-2 border-0 text-center" [nzType]="'primary'" >
+    <button
+      nz-button
+      (click)="handleOk()"
+      [nzLoading]="loadingbutton"
+      class="content-header-button d-flex align-items-center justify-content-center rounded-2 border-0 text-center"
+      [nzType]="'primary'">
       Thêm mới
     </button>
   </div>

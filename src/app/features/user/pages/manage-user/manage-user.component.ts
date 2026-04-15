@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import {Router } from '@angular/router';
+import {ActivatedRoute, Router } from '@angular/router';
 import { UserInfo } from 'src/app/core/models/auth.model';
 import { AuthService } from 'src/app/features/auth/services/auth.service';
 import { Product } from '../../models/product.model';
@@ -20,6 +20,7 @@ export class ManageUserComponent implements OnInit {
   start: number = 1;
   page: number = 1;
   end: number = 10;
+  totalCount = 0;
   pageSize: number = 10;
   pageSizeOptions = [10, 20, 50, 100, 150, 200];
   pageIndex: number = 1;
@@ -35,7 +36,6 @@ export class ManageUserComponent implements OnInit {
   isResoucesUserAdd: boolean = false;
   isPayment: boolean = false;
   products: Product[] = [];
-  totalCount = 0;
   searchTerm = '';
   selectedCategory = '';
   selectedBrand = '';
@@ -80,17 +80,23 @@ export class ManageUserComponent implements OnInit {
   ];
   constructor(
     private router: Router,
+    private route: ActivatedRoute,
     private authService: AuthService,
     private productService: ProductService,
     private message: NzMessageService
   ) {
+    this.route.params.subscribe((params) => {
+      if (params['page']) {
+        this.page = params['page'];
+      }
+      this.loadProducts();
+    });
   }
 
   ngOnInit(): void {
     this.authService.currentUser$.subscribe((user) => {
       this.currentUser = user;
     });
-    this.loadProducts();
   }
 
   loadProducts(): void {
@@ -112,9 +118,11 @@ export class ManageUserComponent implements OnInit {
         this.loading = false;
         this.listOfData = res.items;
         this.listOfData.forEach(p => {
-          this.purchaseQuantities[p.productID] = 1;
+        this.purchaseQuantities[p.productID] = 1;
         });
         this.totalCount = res.totalCount;
+        this.start = (this.page - 1) * this.pageSize + 1;
+        this.end = Math.min(this.page * this.pageSize, this.totalCount);
       },
       (error) => {
         this.loading = false;
@@ -136,11 +144,34 @@ export class ManageUserComponent implements OnInit {
     this.loadProducts();
   }
 
-  handlePageIndexChange(e: any) {}
+  onProductAddedSuccess() {
+    this.loading = true;
+    this.loadProducts();
+  }
 
-  handlePageSizeChange(newPageSize: number) {}
+  handlePageSizeChange(newPageSize: number): void {
+    this.pageSize = newPageSize;
+    this.page = 1;
+    this.pageIndex = 1;
+    this.loadProducts();
+  }
 
-  jumpToPage(value: any) {}
+  handlePageIndexChange(newPageIndex: number) {
+    this.page = newPageIndex;
+    this.router.navigateByUrl(`/admin/manage-user/${this.page}`);
+  }
+
+  jumpToPage(pageNumber: number): void {
+    if (pageNumber >= 1 && pageNumber <= this.getTotalPages()) {
+      this.page = pageNumber;
+      this.pageIndex = pageNumber;
+      this.router.navigateByUrl(`/admin/manage-user/${this.page}`);
+    }
+  }
+
+  getTotalPages(): number {
+    return Math.ceil(this.totalCount / this.pageSize);
+  }
 
   showUserDetails(data: any): void {
     if (data?.id) {

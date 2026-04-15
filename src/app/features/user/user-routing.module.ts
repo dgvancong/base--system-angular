@@ -9,8 +9,8 @@ const routes: Routes = [
     component: ManageUserComponent,
   },
   {
-    path: 'details/:id',
-    component: UserDetailsComponent,
+    path: ':page',
+    component: ManageUserComponent,
   },
 ];
 

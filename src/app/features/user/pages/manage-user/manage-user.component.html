@@ -176,22 +176,23 @@
   </div>
 
   <div class="content">
-    <nz-table
-      #UserTable
-      [nzShowPagination]="false"
-      [nzFrontPagination]="false"
-      [nzLoading]="loading"
-      [nzTotal]="totalCount"
-      [nzData]="listOfData"
-      [nzPageSize]="pageSize"
-      [nzPageIndex]="pageIndex"
-      [nzNoResult]="noResultTemplate"
-      class="border-shadow radius-8">
-      <thead>
-        <tr>
-          <ng-container
-            *ngFor="let colum of listColumnsUserDisplay; index as i"
-            [ngSwitch]="i">
+    <div class="content table-scroll-wrapper">
+      <nz-table
+        #UserTable
+        [nzShowPagination]="false"
+        [nzFrontPagination]="false"
+        [nzLoading]="loading"
+        [nzTotal]="totalCount"
+        [nzData]="listOfData"
+        [nzPageSize]="pageSize"
+        [nzPageIndex]="page"
+        [nzNoResult]="noResultTemplate"
+        class="border-shadow radius-8">
+        <thead>
+          <tr>
+            <ng-container
+              *ngFor="let colum of listColumnsUserDisplay; index as i"
+              [ngSwitch]="i">
             <ng-container *ngSwitchDefault>
               <th
                 scope="col"
@@ -261,7 +262,7 @@
           <td class="text-ghost td-custom">
             {{data?.quantityInStock}}
           </td>
-         <td class="text-ghost td-custom">
+        <td class="text-ghost td-custom">
             <span class="status-badge" [ngClass]="getStatusClass(data?.status)">
               <span class="status-dot"></span>
               {{ data.status || 'Đang bán' }}
@@ -296,7 +297,7 @@
         <tr>
           <td colspan="100%" class="p-3 text-center">
             <app-pagination
-              [data]="listOfDisplayData"
+              [data]="listOfData"
               [start]="start"
               [end]="end"
               [total]="totalCount"
@@ -348,7 +349,8 @@
   (nzOnCancel)="cancelResoucesUserAdd()">
   <ng-container *nzModalContent>
     <app-user-add
-      (cancelModal)="cancelResoucesUserAdd()">
+      (cancelModal)="cancelResoucesUserAdd()"
+      (addSuccess)="onProductAddedSuccess()">
     </app-user-add>
   </ng-container>
 </nz-modal>
