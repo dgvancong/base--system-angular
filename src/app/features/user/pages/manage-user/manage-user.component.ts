@@ -158,7 +158,7 @@ export class ManageUserComponent implements OnInit {
 
   handlePageIndexChange(newPageIndex: number) {
     this.page = newPageIndex;
-    this.router.navigateByUrl(`/admin/manage-user/${this.page}`);
+    this.router.navigateByUrl(`/admin/manage-product/${this.page}`);
   }
 
   jumpToPage(pageNumber: number): void {
@@ -171,12 +171,6 @@ export class ManageUserComponent implements OnInit {
 
   getTotalPages(): number {
     return Math.ceil(this.totalCount / this.pageSize);
-  }
-
-  showUserDetails(data: any): void {
-    if (data?.id) {
-      this.router.navigateByUrl(`/admin/manage-product/details/${data?.id}`);
-    }
   }
 
   showDeleteRole(productID: any) {
