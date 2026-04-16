@@ -1,29 +1,35 @@
-import {
-  Component,
-  OnInit,
-} from '@angular/core';
+import { Component, OnInit } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
 import * as moment from 'moment';
+import { ProductService } from 'src/app/features/user/services/users.service';
 import { NzMessageService } from 'ng-zorro-antd/message';
-
-interface ProductItem {
-  name: string;
+export interface OrderDisplay {
+  id: number;
+  orderDate: string;
+  totalAmount: number;
+  paymentMethod: string;
+  orderStatus: string;
+  salesPerson: string;
+  discountAmount: number;
+  notes: string;
   quantity: number;
-  price: number;
-  total: number;
+  customerName: string;
+  customerPhone: string;
+  customerEmail: string;
+  customerAddress: string;
+  products: any[];
+  expand: boolean;
+  status: string;
 }
 
-interface Order {
-  id: number;
-  customerName: string;
-  customerPhone?: string;
-  customerEmail?: string;
-  customerAddress?: string;
-  totalAmount: number;
-  quantity: number;
-  status: 'completed' | 'pending' | 'cancelled';
-  orderDate: Date;
-  products: ProductItem[];
-  expand?: boolean; // Thêm property để quản lý trạng thái mở rộng
+export interface OrderStats {
+  totalRevenue: number;
+  totalQuantity: number;
+  orderCount: number;
+  averageOrderValue: number;
+  completedOrders: number;
+  cancelledOrders: number;
+  pendingOrders: number;
 }
 
 @Component({
@@ -32,209 +38,38 @@ interface Order {
   styleUrls: ['./dashboad.component.scss'],
 })
 export class DashboadComponent implements OnInit {
-  orders: Order[] = [
-    {
-      id: 1001,
-      customerName: 'Nguyễn Văn A',
-      customerPhone: '0987654321',
-      customerEmail: 'nguyenvana@email.com',
-      customerAddress: '123 Đường Láng, Đống Đa, Hà Nội',
-      totalAmount: 1250000,
-      quantity: 3,
-      status: 'completed',
-      orderDate: new Date(2026, 3, 10),
-      expand: false,
-      products: [
-        { name: 'Áo sơ mi nam cao cấp', quantity: 2, price: 350000, total: 700000 },
-        { name: 'Quần tây âu lịch sự', quantity: 1, price: 550000, total: 550000 }
-      ]
-    },
-    {
-      id: 1002,
-      customerName: 'Trần Thị B',
-      customerPhone: '0978123456',
-      customerEmail: 'tranb@email.com',
-      customerAddress: '456 Nguyễn Trãi, Quận 1, TP.HCM',
-      totalAmount: 890000,
-      quantity: 2,
-      status: 'completed',
-      orderDate: new Date(2026, 3, 11),
-      expand: false,
-      products: [
-        { name: 'Váy công sở thanh lịch', quantity: 1, price: 590000, total: 590000 },
-        { name: 'Giày cao gót nữ', quantity: 1, price: 300000, total: 300000 }
-      ]
-    },
-    {
-      id: 1003,
-      customerName: 'Lê Văn C',
-      customerPhone: '0912345678',
-      customerEmail: 'levanc@email.com',
-      customerAddress: '789 Hoàng Hoa Thám, Ba Đình, Hà Nội',
-      totalAmount: 2100000,
-      quantity: 5,
-      status: 'pending',
-      orderDate: new Date(2026, 3, 5),
-      expand: false,
-      products: [
-        { name: 'Bộ suit nam cao cấp', quantity: 1, price: 1500000, total: 1500000 },
-        { name: 'Cà vạt lụa thượng hạng', quantity: 2, price: 200000, total: 400000 },
-        { name: 'Áo sơ mi trắng', quantity: 2, price: 100000, total: 200000 }
-      ]
-    },
-    {
-      id: 1004,
-      customerName: 'Phạm Thị D',
-      customerPhone: '0965432187',
-      customerEmail: 'phamthid@email.com',
-      customerAddress: '321 Lê Lợi, Hải Châu, Đà Nẵng',
-      totalAmount: 450000,
-      quantity: 1,
-      status: 'completed',
-      orderDate: new Date(2026, 2, 28),
-      expand: false,
-      products: [
-        { name: 'Túi xách nữ hàng hiệu', quantity: 1, price: 450000, total: 450000 }
-      ]
-    },
-    {
-      id: 1005,
-      customerName: 'Hoàng Văn E',
-      customerPhone: '0934567890',
-      customerEmail: 'hoangve@email.com',
-      customerAddress: '567 Nguyễn Huệ, Ninh Kiều, Cần Thơ',
-      totalAmount: 3200000,
-      quantity: 7,
-      status: 'completed',
-      orderDate: new Date(2026, 2, 15),
-      expand: false,
-      products: [
-        { name: 'Laptop Dell XPS 15', quantity: 1, price: 2500000, total: 2500000 },
-        { name: 'Chuột không dây Logitech', quantity: 2, price: 200000, total: 400000 },
-        { name: 'Túi chống sốc laptop', quantity: 1, price: 300000, total: 300000 }
-      ]
-    },
-    {
-      id: 1006,
-      customerName: 'Ngô Thị F',
-      customerPhone: '0945678123',
-      customerEmail: 'ngothif@email.com',
-      customerAddress: '890 Trần Phú, Hà Đông, Hà Nội',
-      totalAmount: 670000,
-      quantity: 2,
-      status: 'cancelled',
-      orderDate: new Date(2026, 1, 20),
-      expand: false,
-      products: [
-        { name: 'Set mỹ phẩm dưỡng da', quantity: 1, price: 450000, total: 450000 },
-        { name: 'Sữa rửa mặt trắng da', quantity: 1, price: 220000, total: 220000 }
-      ]
-    },
-    {
-      id: 1007,
-      customerName: 'Đỗ Văn G',
-      customerPhone: '0956781234',
-      customerEmail: 'dovang@email.com',
-      customerAddress: '123 Bạch Đằng, Hồng Bàng, Hải Phòng',
-      totalAmount: 1890000,
-      quantity: 4,
-      status: 'completed',
-      orderDate: new Date(2026, 3, 1),
-      expand: false,
-      products: [
-        { name: 'Điện thoại iPhone 15 Pro', quantity: 1, price: 1890000, total: 1890000 }
-      ]
-    },
-    {
-      id: 1008,
-      customerName: 'Bùi Thị H',
-      customerPhone: '0976543210',
-      customerEmail: 'buithih@email.com',
-      customerAddress: '456 Phan Chu Trinh, Pleiku, Gia Lai',
-      totalAmount: 990000,
-      quantity: 2,
-      status: 'completed',
-      orderDate: new Date(2026, 3, 12),
-      expand: false,
-      products: [
-        { name: 'Đồng hồ thể thao chính hãng', quantity: 1, price: 690000, total: 690000 },
-        { name: 'Kính mát thời trang', quantity: 1, price: 300000, total: 300000 }
-      ]
-    },
-    {
-      id: 1009,
-      customerName: 'Vũ Văn I',
-      customerPhone: '0987123456',
-      customerEmail: 'vuvani@email.com',
-      customerAddress: '789 Hùng Vương, Việt Trì, Phú Thọ',
-      totalAmount: 2550000,
-      quantity: 6,
-      status: 'pending',
-      orderDate: new Date(2026, 2, 25),
-      expand: false,
-      products: [
-        { name: 'Máy ảnh Canon EOS R50', quantity: 1, price: 1800000, total: 1800000 },
-        { name: 'Ống kính 50mm f/1.8', quantity: 1, price: 500000, total: 500000 },
-        { name: 'Thẻ nhớ 32GB', quantity: 2, price: 125000, total: 250000 }
-      ]
-    },
-    {
-      id: 1010,
-      customerName: 'Đặng Thị K',
-      customerPhone: '0967890123',
-      customerEmail: 'dangthik@email.com',
-      customerAddress: '234 Lý Tự Trọng, Vinh, Nghệ An',
-      totalAmount: 730000,
-      quantity: 1,
-      status: 'completed',
-      orderDate: new Date(2026, 3, 8),
-      expand: false,
-      products: [
-        { name: 'Nước hoa cao cấp Pháp', quantity: 1, price: 730000, total: 730000 }
-      ]
-    },
-    {
-      id: 1011,
-      customerName: 'Lý Văn L',
-      customerPhone: '0978123456',
-      customerEmail: 'lyvanl@email.com',
-      customerAddress: '456 Lý Thường Kiệt, Hà Nội',
-      totalAmount: 4120000,
-      quantity: 9,
-      status: 'completed',
-      orderDate: new Date(2025, 11, 15),
-      expand: false,
-      products: [
-        { name: 'TV Samsung 4K 55 inch', quantity: 1, price: 4120000, total: 4120000 }
-      ]
-    },
-    {
-      id: 1012,
-      customerName: 'Mai Thị M',
-      customerPhone: '0987654321',
-      customerEmail: 'maithm@email.com',
-      customerAddress: '789 Trần Hưng Đạo, Hải Phòng',
-      totalAmount: 1540000,
-      quantity: 3,
-      status: 'completed',
-      orderDate: new Date(2026, 0, 10),
-      expand: false,
-      products: [
-        { name: 'Loa bluetooth JBL', quantity: 2, price: 500000, total: 1000000 },
-        { name: 'Tai nghe Sony', quantity: 1, price: 540000, total: 540000 }
-      ]
-    }
-  ];
-
+  start: number = 1;
+  page: number = 1;
+  end: number = 10;
+  totalCount = 0;
+  pageSize: number = 10;
+  pageSizeOptions = [10, 20, 50, 100, 150, 200];
+  pageIndex: number = 1;
+  jumpPage: number = 1;
+  loading: boolean = false;
+  orders: OrderDisplay[] = [];
+  filteredOrders: OrderDisplay[] = [];
   // Bộ lọc
   filterType: 'day' | 'week' | 'month' | 'year' = 'month';
-  selectedDate: Date | null = new Date();
+  selectedDate: Date = new Date();
+  fromDate: string = '';
+  toDate: string = '';
+  orderStatus: string = '';
+  salesPerson: string = '';
 
   // Dữ liệu sau lọc
-  filteredOrders: Order[] = [];
   totalRevenue: number = 0;
   totalQuantity: number = 0;
   orderCount: number = 0;
+  stats: OrderStats = {
+    totalRevenue: 0,
+    totalQuantity: 0,
+    orderCount: 0,
+    averageOrderValue: 0,
+    completedOrders: 0,
+    cancelledOrders: 0,
+    pendingOrders: 0,
+  };
 
   // Tùy chọn cho select
   filterOptions = [
@@ -244,65 +79,230 @@ export class DashboadComponent implements OnInit {
     { value: 'year', label: 'Theo năm' },
   ];
 
-  constructor() {}
+  constructor(
+    private productService: ProductService,
+    private route: ActivatedRoute,
+    private message: NzMessageService,
+    private router: Router,
+  ) {
+    this.route.params.subscribe((params) => {
+      if (params['page']) {
+        this.page = params['page'];
+      }
+      this.loadOrders();
+    });
+  }
 
   ngOnInit(): void {
     this.applyFilter();
   }
 
+  loadOrders(): void {
+    this.loading = true;
+    const filter = {
+      pageNumber: this.page,
+      pageSize: this.pageSize,
+    };
+    this.productService.getOrders(filter).subscribe({
+      next: (response: any) => {
+        this.loading = false;
+        const rawOrders = response?.items || response?.data || [];
+        this.totalCount = response?.totalCount || rawOrders.length;
+        this.orders = rawOrders.map((order: any) =>
+          this.mapOrderToDisplay(order),
+        );
+        this.filteredOrders = [...this.orders];
+        this.calculateStatistics();
+        this.start = (this.page - 1) * this.pageSize + 1;
+        this.end = Math.min(this.page * this.pageSize, this.totalCount);
+      },
+      error: (error) => {
+        this.loading = false;
+        console.error('Lỗi tải đơn hàng:', error);
+      },
+    });
+  }
+
+  private mapOrderToDisplay(order: any): OrderDisplay {
+    const totalQuantity =
+      order.orderDetails?.reduce(
+        (sum: number, item: any) => sum + (item.quantity || 0),
+        0,
+      ) || 0;
+    const products =
+      order.orderDetails?.map((item: any) => ({
+        name: item.productName,
+        quantity: item.quantity,
+        price: item.unitPrice,
+        total: item.totalAmount,
+        code: item.productCode,
+      })) || [];
+    return {
+      id: order.orderID,
+      orderDate: order.orderDate,
+      totalAmount: order.totalAmount,
+      paymentMethod: order.paymentMethod,
+      orderStatus: order.orderStatus,
+      salesPerson: order.salesPerson,
+      discountAmount: order.discountAmount,
+      notes: order.notes,
+      quantity: totalQuantity,
+      status: order.orderStatus,
+      customerName: order.customerName || 'Khách lẻ',
+      customerPhone: order.customerPhone || 'Chưa cập nhật',
+      customerEmail: order.customerEmail || 'Chưa cập nhật',
+      customerAddress: order.customerAddress || order.notes || 'Chưa cập nhật',
+      products: products,
+      expand: false,
+    };
+  }
+
   applyFilter(): void {
     if (!this.selectedDate) {
-      this.filteredOrders = [];
-      this.calculateStats();
-     console.log('Vui lòng chọn mốc thời gian');
+      this.filteredOrders = [...this.orders];
+      this.calculateStatistics();
       return;
     }
 
-    const referenceDate = moment(this.selectedDate);
     this.filteredOrders = this.orders.filter((order) => {
-      const orderDate = moment(order.orderDate);
+      const orderDate = new Date(order.orderDate);
+
       switch (this.filterType) {
         case 'day':
-          return orderDate.isSame(referenceDate, 'day');
+          return this.isSameDay(orderDate, this.selectedDate);
+
         case 'week':
-          return orderDate.isSame(referenceDate, 'week');
+          return this.isSameWeek(orderDate, this.selectedDate);
+
         case 'month':
-          return orderDate.isSame(referenceDate, 'month');
+          return this.isSameMonth(orderDate, this.selectedDate);
+
         case 'year':
-          return orderDate.isSame(referenceDate, 'year');
+          return this.isSameYear(orderDate, this.selectedDate);
+
         default:
           return true;
       }
     });
 
-    this.calculateStats();
+    this.calculateStatistics();
+  }
 
-    if (this.filteredOrders.length === 0) {
-      console.log(`Không có đơn hàng nào trong ${this.getFilterLabel()}`);
-    } else {
-      console.log(`Tìm thấy ${this.filteredOrders.length} đơn hàng trong ${this.getFilterLabel()}`);
+  /**
+   * Kiểm tra cùng ngày
+   */
+  private isSameDay(date1: Date, date2: Date): boolean {
+    return (
+      date1.getDate() === date2.getDate() &&
+      date1.getMonth() === date2.getMonth() &&
+      date1.getFullYear() === date2.getFullYear()
+    );
+  }
+
+  /**
+   * Kiểm tra cùng tuần
+   */
+  private isSameWeek(date1: Date, date2: Date): boolean {
+    const getWeekNumber = (date: Date): number => {
+      const firstDayOfYear = new Date(date.getFullYear(), 0, 1);
+      const pastDaysOfYear =
+        (date.getTime() - firstDayOfYear.getTime()) / 86400000;
+      return Math.ceil((pastDaysOfYear + firstDayOfYear.getDay() + 1) / 7);
+    };
+
+    return (
+      date1.getFullYear() === date2.getFullYear() &&
+      getWeekNumber(date1) === getWeekNumber(date2)
+    );
+  }
+
+  /**
+   * Kiểm tra cùng tháng
+   */
+  private isSameMonth(date1: Date, date2: Date): boolean {
+    return (
+      date1.getMonth() === date2.getMonth() &&
+      date1.getFullYear() === date2.getFullYear()
+    );
+  }
+
+  /**
+   * Kiểm tra cùng năm
+   */
+  private isSameYear(date1: Date, date2: Date): boolean {
+    return date1.getFullYear() === date2.getFullYear();
+  }
+
+  /**
+   * Format hiển thị ngày theo loại lọc
+   */
+  getDisplayDate(): string {
+    if (!this.selectedDate) return 'Tất cả';
+
+    switch (this.filterType) {
+      case 'day':
+        return this.selectedDate.toLocaleDateString('vi-VN');
+      case 'week':
+        const weekNumber = this.getWeekNumber(this.selectedDate);
+        return `Tuần ${weekNumber}, ${this.selectedDate.getFullYear()}`;
+      case 'month':
+        return this.selectedDate.toLocaleDateString('vi-VN', {
+          month: 'long',
+          year: 'numeric',
+        });
+      case 'year':
+        return this.selectedDate.getFullYear().toString();
+      default:
+        return this.selectedDate.toLocaleDateString('vi-VN');
     }
   }
 
-  // Thống kê tổng quan
-  calculateStats(): void {
-    this.totalRevenue = this.filteredOrders.reduce(
-      (sum, order) => sum + order.totalAmount,
-      0,
-    );
-    this.totalQuantity = this.filteredOrders.reduce(
-      (sum, order) => sum + order.quantity,
-      0,
-    );
-    this.orderCount = this.filteredOrders.length;
+  private getWeekNumber(date: Date): number {
+    const firstDayOfYear = new Date(date.getFullYear(), 0, 1);
+    const pastDaysOfYear =
+      (date.getTime() - firstDayOfYear.getTime()) / 86400000;
+    return Math.ceil((pastDaysOfYear + firstDayOfYear.getDay() + 1) / 7);
   }
 
-  // Toggle expand row để hiển thị chi tiết hóa đơn
-  toggleExpand(order: Order): void {
+  calculateStatistics(): void {
+    this.totalRevenue = 0;
+    this.totalQuantity = 0;
+    this.orderCount = this.filteredOrders.length;
+    this.stats = {
+      totalRevenue: 0,
+      totalQuantity: 0,
+      orderCount: this.orderCount,
+      averageOrderValue: 0,
+      completedOrders: 0,
+      cancelledOrders: 0,
+      pendingOrders: 0,
+    };
+    this.filteredOrders.forEach((order) => {
+      this.stats.totalRevenue += order.totalAmount || 0;
+      this.stats.totalQuantity += order.quantity || 0;
+      switch (order.orderStatus) {
+        case 'Hoàn thành':
+          this.stats.completedOrders++;
+          break;
+        case 'Đã hủy':
+          this.stats.cancelledOrders++;
+          break;
+        case 'Đang xử lý':
+          this.stats.pendingOrders++;
+          break;
+      }
+    });
+    this.stats.averageOrderValue =
+      this.orderCount > 0 ? this.stats.totalRevenue / this.orderCount : 0;
+    this.totalRevenue = this.stats.totalRevenue;
+    this.totalQuantity = this.stats.totalQuantity;
+    this.orderCount = this.stats.orderCount;
+  }
+
+  toggleExpand(order: OrderDisplay): void {
     order.expand = !order.expand;
   }
 
-  // Reset filter
   resetFilter(): void {
     this.selectedDate = new Date();
     this.filterType = 'month';
@@ -314,37 +314,31 @@ export class DashboadComponent implements OnInit {
     if (!this.selectedDate) return 'Chưa chọn';
     const date = moment(this.selectedDate);
     switch (this.filterType) {
-      case 'day': return `ngày ${date.format('DD/MM/YYYY')}`;
-      case 'week': return `tuần ${date.week()} năm ${date.year()}`;
-      case 'month': return `tháng ${date.format('MM/YYYY')}`;
-      case 'year': return `năm ${date.format('YYYY')}`;
-      default: return '';
+      case 'day':
+        return `ngày ${date.format('DD/MM/YYYY')}`;
+      case 'week':
+        return `tuần ${date.week()} năm ${date.year()}`;
+      case 'month':
+        return `tháng ${date.format('MM/YYYY')}`;
+      case 'year':
+        return `năm ${date.format('YYYY')}`;
+      default:
+        return '';
     }
   }
 
   getStatusTag(status: string): string {
     switch (status) {
-      case 'completed':
+      case 'Hoàn thành':
         return 'success';
-      case 'pending':
+      case 'Đang xử lý':
         return 'warning';
-      case 'cancelled':
+      case 'Đã hủy':
         return 'error';
+      case 'Đã giao':
+        return 'processing';
       default:
         return 'default';
-    }
-  }
-
-  getStatusText(status: string): string {
-    switch (status) {
-      case 'completed':
-        return 'Hoàn thành';
-      case 'pending':
-        return 'Đang xử lý';
-      case 'cancelled':
-        return 'Đã hủy';
-      default:
-        return status;
     }
   }
 
@@ -353,5 +347,70 @@ export class DashboadComponent implements OnInit {
       style: 'currency',
       currency: 'VND',
     }).format(value);
+  }
+
+  formatDateTime(dateString: string): string {
+    if (!dateString) return 'Chưa cập nhật';
+    const utcDate = new Date(dateString);
+    const vnDate = new Date(utcDate.getTime() + 7 * 60 * 60 * 1000);
+    const hours = vnDate.getHours().toString().padStart(2, '0');
+    const minutes = vnDate.getMinutes().toString().padStart(2, '0');
+    const seconds = vnDate.getSeconds().toString().padStart(2, '0');
+    const day = vnDate.getDate().toString().padStart(2, '0');
+    const month = (vnDate.getMonth() + 1).toString().padStart(2, '0');
+    const year = vnDate.getFullYear();
+    return `${hours}:${minutes}:${seconds} ngày ${day}/${month}/${year}`;
+  }
+
+  formatDate(dateString: string): string {
+    if (!dateString) return 'Chưa cập nhật';
+
+    const utcDate = new Date(dateString);
+    const vnDate = new Date(utcDate.getTime() + 7 * 60 * 60 * 1000);
+
+    const day = vnDate.getDate().toString().padStart(2, '0');
+    const month = (vnDate.getMonth() + 1).toString().padStart(2, '0');
+    const year = vnDate.getFullYear();
+
+    return `${day}/${month}/${year}`;
+  }
+
+  getStatusClass(status: string): string {
+    switch (status) {
+      case 'Hoàn thành':
+        return 'status-completed';
+      case 'Đang xử lý':
+        return 'status-pending';
+      case 'Đã hủy':
+        return 'status-cancelled';
+      case 'Đã giao':
+        return 'status-delivered';
+      default:
+        return '';
+    }
+  }
+
+  handlePageSizeChange(newPageSize: number): void {
+    this.pageSize = newPageSize;
+    this.page = 1;
+    this.pageIndex = 1;
+    this.loadOrders();
+  }
+
+  handlePageIndexChange(newPageIndex: number) {
+    this.page = newPageIndex;
+    this.router.navigateByUrl(`/admin/manage-product/${this.page}`);
+  }
+
+  jumpToPage(pageNumber: number): void {
+    if (pageNumber >= 1 && pageNumber <= this.getTotalPages()) {
+      this.page = pageNumber;
+      this.pageIndex = pageNumber;
+      this.router.navigateByUrl(`/admin/manage-product/${this.page}`);
+    }
+  }
+
+  getTotalPages(): number {
+    return Math.ceil(this.totalCount / this.pageSize);
   }
 }

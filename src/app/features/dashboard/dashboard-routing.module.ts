@@ -6,6 +6,11 @@ const routes: Routes = [
     path: '',
     component: DashboadComponent,
   },
+
+  {
+    path: ':page',
+    component: DashboadComponent,
+  },
 ];
 
 @NgModule({

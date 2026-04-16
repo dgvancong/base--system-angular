@@ -28,7 +28,7 @@
       </button>
 
       <!-- Thanh toán -->
-      <button *ngIf="bodyDataProductadd?.length" nz-button nzType="primary" class="border-0 add fw5 p-2 rounded-2 text-white d-flex align-items-center" (click)="showPayment()">
+      <button *ngIf="cartItems?.length" nz-button nzType="primary" class="border-0 add fw5 p-2 rounded-2 text-white d-flex align-items-center" (click)="showPayment()">
         <span
           style="font-size: 20px; color: transparent;"
           nz-icon
@@ -120,6 +120,7 @@
                   [(ngModel)]="priceRange"
                   (ngModelChange)="onPriceChange()">
                 </nz-slider>
+
                 <div class="price-values">
                   <div class="price-input-group">
                     <span class="price-currency">đ</span>
@@ -143,6 +144,8 @@
                       class="price-input">
                   </div>
                 </div>
+
+                <!-- Chỉ giữ một danh sách price-presets -->
                 <div class="price-presets">
                   <button
                     *ngFor="let preset of pricePresets"
@@ -150,15 +153,6 @@
                     nzSize="small"
                     (click)="applyPricePreset(preset)">
                     {{ preset.label }}
-                  </button>
-                </div>
-                <div class="price-presets">
-                  <button
-                    *ngFor="let preset of pricePresets"
-                    nz-button
-                    nzSize="small"
-                    (click)="applyPricePreset(preset)">
-                    {{ preset?.label }}
                   </button>
                 </div>
               </div>
@@ -375,59 +369,62 @@
           <span style="font-size: 20px;" nz-icon nzType="ng-zorro:del_icon" nzTheme="outline"></span>
         </button>
       </div>
-        <div class="cart-items-list overflow-y-auto pe-2" *ngIf="bodyDataProductadd.length > 0; else emptyCart">
-          <div class="cart-item" *ngFor="let item of bodyDataProductadd; let i = index">
-            <div class="d-flex align-items-center gap-3 p-3 mb-3 rounded-2 justify-content-between">
-              <div class="item-details">
-                <div class="item-name fs4 mb-2">
-                  <strong>{{ item.productName }}</strong>
-                  <span class="item-code ms-2 fs2">({{ item.productCode }})</span>
-                </div>
-                <div class="item-attributes d-flex flex-wrap gap-3 mb-2">
-                  <span class="attribute fs2" *ngIf="item.color">
-                    <span nz-icon nzType="bg-colors" class="me-1 fs2"></span>
-                    Màu: {{ item.color }}
-                  </span>
-                  <span class="attribute fs2" *ngIf="item.size">
-                    <span nz-icon nzType="api" class="me-1 fs2"></span>
-                    Size: {{ item.size }}
-                  </span>
-                  <span class="attribute fs2" *ngIf="item.categoryName">
-                    <span nz-icon nzType="appstore" class="me-1 fs2"></span>
-                    Loại: {{ item.categoryName }}
-                  </span>
-                </div>
-                <div class="item-price fs2">
-                  Đơn giá: <strong>{{ formatPrice(item.sellingPrice) }}</strong>
-                </div>
+      <div class="cart-items-list overflow-y-auto pe-2" *ngIf="tempProduct; else emptyCart">
+        <div class="cart-item">
+          <div class="d-flex align-items-center gap-3 p-3 mb-3 rounded-2 justify-content-between">
+            <div class="item-details">
+              <div class="item-name fs4 mb-2">
+                <strong>{{ tempProduct.productName }}</strong>
+                <span class="item-code ms-2 fs2">({{ tempProduct.productCode }})</span>
               </div>
-              <div class="item-quantity">
-                 <nz-input-number
-                  [(ngModel)]="purchaseQuantities[item.productID]"
-                  [nzMin]="1"
-                  [nzMax]="item.quantityInStock"
-                  (ngModelChange)="updateQuantity(item.productID, $event)"
-                  class="quantity-input">
-                </nz-input-number>
+              <div class="item-attributes d-flex flex-wrap gap-3 mb-2">
+                <span class="attribute fs2" *ngIf="tempProduct.color">
+                  <span nz-icon nzType="bg-colors" class="me-1 fs2"></span>
+                  Màu: {{ tempProduct.color }}
+                </span>
+                <span class="attribute fs2" *ngIf="tempProduct.size">
+                  <span nz-icon nzType="api" class="me-1 fs2"></span>
+                  Size: {{ tempProduct.size }}
+                </span>
+                <span class="attribute fs2" *ngIf="tempProduct.categoryName">
+                  <span nz-icon nzType="appstore" class="me-1 fs2"></span>
+                  Loại: {{ tempProduct.categoryName }}
+                </span>
+              </div>
+              <div class="item-price fs2">
+                Đơn giá: <strong>{{ formatPrice(tempProduct.sellingPrice) }}</strong>
+              </div>
+              <div class="item-stock fs2 text-muted mt-1" *ngIf="tempProduct.quantityInStock">
+                Số lượng trong kho: {{ tempProduct.quantityInStock }}
               </div>
             </div>
-            <div class="d-flex align-items-center justify-content-end gap-3 pt-4 filter-actions">
-              <button nz-button class=" text-center content-header-button d-flex align-items-center justify-content-center rounded-2" (click)="cancelInvoiceAdd()">
-                Huỷ
-              </button>
-              <button nz-button class="content-header-button d-flex align-items-center justify-content-center rounded-2 border-0 text-center" [nzType]="'primary'" (click)="addToCart(item)" >
-                Thêm mới
-              </button>
+            <div class="item-quantity">
+              <nz-input-number
+                [(ngModel)]="tempQuantity"
+                [nzMin]="1"
+                [nzMax]="tempProduct.quantityInStock"
+                (ngModelChange)="updateTempQuantity($event)"
+                class="quantity-input">
+              </nz-input-number>
             </div>
+          </div>
+          <div class="d-flex align-items-center justify-content-end gap-3 pt-4 filter-actions">
+            <button nz-button class="text-center content-header-button d-flex align-items-center justify-content-center rounded-2" (click)="cancelInvoiceAdd()">
+              Huỷ
+            </button>
+            <button nz-button class="content-header-button d-flex align-items-center justify-content-center rounded-2 border-0 text-center" [nzType]="'primary'" (click)="addToCart()">
+              Thêm mới
+            </button>
           </div>
         </div>
-        <ng-template #emptyCart>
-          <div class="empty-cart text-center">
-            <span nz-icon nzType="shopping-cart" class="mb-3" nzTheme="outline"></span>
-            <p class="fs6 mb-4">Giỏ hàng của bạn đang trống</p>
-            <button nz-button>Tiếp tục mua sắm</button>
-          </div>
-        </ng-template>
+      </div>
+      <ng-template #emptyCart>
+        <div class="empty-cart text-center">
+          <span nz-icon nzType="shopping-cart" class="mb-3" nzTheme="outline"></span>
+          <p class="fs6 mb-4">Giỏ hàng của bạn đang trống</p>
+          <button nz-button>Tiếp tục mua sắm</button>
+        </div>
+      </ng-template>
     </div>
   </ng-container>
 </nz-modal>
@@ -443,8 +440,9 @@
   (nzOnCancel)="cancelPayment()">
   <ng-container *nzModalContent>
     <app-user-details
-      [data]="bodyDataProduct"
-      (cancelModal)="cancelPayment()">
+      [data]="cartItems"
+      (cancelModal)="cancelPayment()"
+      (addSuccess)="onProductAddedSuccess()">
     </app-user-details>
   </ng-container>
 </nz-modal>

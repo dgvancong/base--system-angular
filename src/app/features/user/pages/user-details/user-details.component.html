@@ -4,126 +4,128 @@
       Thanh toán đơn hàng ({{ cartItems.length }})
     </h6>
     <button class="content-header-button d-flex align-items-center justify-content-between rounded-2 border-0" (click)="handleCancel()">
-      <span style="font-size: 20px;" nz-icon nzType="ng-zorro:del_icon" nzTheme="outline"></span>
+      <span style="font-size: 20px;" nz-icon nzType="close" nzTheme="outline"></span>
     </button>
   </div>
+
   <div class="cart-checkout-container pt-3 d-flex gap-4 overflow-hidden">
-      <!-- Cột trái: Danh sách sản phẩm -->
-      <div class="cart-items-column d-flex flex-column overflow-hidden">
-        <div class="cart-header d-flex justify-content-end mb-3 align-items-center">
-          <button nz-button nzType="link" class="d-flex align-items-center" (click)="clearCart()" *ngIf="cartItems.length > 0">
-            <span nz-icon nzType="delete"></span>
-            Xóa tất cả
-          </button>
-        </div>
-
-        <div class="cart-items-list overflow-y-auto pe-2" *ngIf="cartItems.length > 0; else emptyCart">
-          <div class="cart-item d-flex gap-3 p-3 mb-3 rounded-2" *ngFor="let item of cartItems; let i = index">
-
-            <div class="item-details">
-              <div class="item-name fs4 mb-2">
-                <strong>{{ item.productName }}</strong>
-                <span class="item-code ms-2 fs2">({{ item.productCode }})</span>
-              </div>
-
-              <div class="item-attributes d-flex flex-wrap gap-3 mb-2">
-                <span class="attribute fs2" *ngIf="item.color">
-                  <span nz-icon nzType="bg-colors" class="me-1 fs2"></span>
-                  Màu: {{ item.color }}
-                </span>
-                <span class="attribute fs2" *ngIf="item.size">
-                  <span nz-icon nzType="api" class="me-1 fs2"></span>
-                  Size: {{ item.size }}
-                </span>
-                <span class="attribute fs2" *ngIf="item.categoryName">
-                  <span nz-icon nzType="appstore" class="me-1 fs2"></span>
-                  Loại: {{ item.categoryName }}
-                </span>
-              </div>
-
-              <div class="item-price fs2">
-                Đơn giá: <strong>{{ formatPrice(item.sellingPrice) }}</strong>
-              </div>
-            </div>
-
-            <div class="item-quantity">
-              <nz-input-number
-                [(ngModel)]="item.quantityInStock"
-                [nzMin]="1"
-                [nzMax]="item.quantityInStock"
-                (ngModelChange)="updateQuantity(item, $event)"
-                class="quantity-input w-100">
-              </nz-input-number>
-            </div>
-
-            <div class="item-total text-end">
-              <div class="total-label fs2 mb-1">Thành tiền:</div>
-              <div class="total-amount fs6 fw6">{{ formatPrice(item.sellingPrice * item.quantityInStock) }}</div>
-            </div>
-
-            <div class="item-actions">
-              <button nz-button nzType="text" nzDanger (click)="removeFromCart(item)">
-                <span nz-icon nzType="close"></span>
-              </button>
-            </div>
-          </div>
-        </div>
-
-        <ng-template #emptyCart>
-          <div class="empty-cart text-center">
-            <span nz-icon nzType="shopping-cart" class="mb-3" nzTheme="outline"></span>
-            <p class="fs6 mb-4">Giỏ hàng của bạn đang trống</p>
-            <button nz-button>Tiếp tục mua sắm</button>
-          </div>
-        </ng-template>
+    <!-- Cột trái: Danh sách sản phẩm -->
+    <div class="cart-items-column d-flex flex-column overflow-hidden">
+      <div class="cart-header d-flex justify-content-end mb-3 align-items-center">
+        <button nz-button nzType="link" class="d-flex align-items-center" (click)="clearCart()" *ngIf="cartItems.length > 0">
+          <span nz-icon nzType="delete"></span>
+          Xóa tất cả
+        </button>
       </div>
 
-      <!-- Cột phải: Thanh toán -->
-      <div class="checkout-column rounded-3 d-flex flex-column overflow-y-auto">
-        <div class="checkout-header mb-4">
-          <h4 class="m-0 fw6">Thông tin thanh toán</h4>
-        </div>
+      <div class="cart-items-list overflow-y-auto pe-2" *ngIf="cartItems.length > 0; else emptyCart">
+        <div class="cart-item d-flex gap-3 p-3 mb-3 rounded-2" *ngFor="let item of cartItems; let i = index">
+          <div class="item-details flex-grow-1">
+            <div class="item-name fs4 mb-2">
+              <strong>{{ item.productName }}</strong>
+              <span class="item-code ms-2 fs2">({{ item.productCode }})</span>
+            </div>
 
-        <div class="checkout-summary">
-          <div class="summary-row d-flex justify-content-between fs4">
-            <span>Tạm tính:</span>
-            <span>{{ formatPrice(getSubtotal()) }}</span>
-          </div>
+            <div class="item-attributes d-flex flex-wrap gap-3 mb-2">
+              <span class="attribute fs2" *ngIf="item.color">
+                <span nz-icon nzType="bg-colors" class="me-1 fs2"></span>
+                Màu: {{ item.color }}
+              </span>
+              <span class="attribute fs2" *ngIf="item.size">
+                <span nz-icon nzType="api" class="me-1 fs2"></span>
+                Size: {{ item.size }}
+              </span>
+              <span class="attribute fs2" *ngIf="item.categoryName">
+                <span nz-icon nzType="appstore" class="me-1 fs2"></span>
+                Loại: {{ item.categoryName }}
+              </span>
+            </div>
 
-          <div class="summary-row discount-row align-items-center d-flex justify-content-between">
-            <span>Giảm giá:</span>
-            <div class="discount-input-wrapper d-flex align-items-center gap-1">
-              <input
-                nz-input
-                type="text"
-                [value]="discountAmount | number:'1.0-0'"
-                (input)="onDiscountInput($event)"
-                placeholder="0"
-                class="discount-input w-100 text-start">
-              <span class="discount-currency">đ</span>
+            <div class="item-price fs2">
+              Đơn giá: <strong>{{ formatPrice(item.sellingPrice) }}</strong>
             </div>
           </div>
 
-          <div class="summary-row total fs8 fw6 mt-2 pt-3 d-flex justify-content-between align-items-center">
-            <span>Tổng cộng:</span>
-            <span class="total-amount">{{ formatPrice(getTotal()) }}</span>
+          <div class="item-quantity" style="width: 120px;">
+            <nz-input-number
+              [(ngModel)]="item.purchaseQuantity"
+              [nzMin]="1"
+              [nzMax]="item.inStock"
+              (ngModelChange)="updateQuantity(item, $event)"
+              class="quantity-input w-100">
+            </nz-input-number>
+          </div>
+
+          <div class="item-total text-end" style="width: 150px;">
+            <div class="total-label fs2 mb-1">Thành tiền:</div>
+            <div class="total-amount fs6 fw6">{{ formatPrice(item.sellingPrice * item.purchaseQuantity) }}</div>
+          </div>
+
+          <div class="item-actions">
+            <button nz-button nzType="text" nzDanger (click)="removeFromCart(item)">
+              <span nz-icon nzType="close"></span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <ng-template #emptyCart>
+        <div class="empty-cart text-center p-5">
+          <span nz-icon nzType="shopping-cart" class="fs-1 mb-3" nzTheme="outline"></span>
+          <p class="fs6 mb-4">Giỏ hàng của bạn đang trống</p>
+          <button nz-button (click)="handleCancel()">Tiếp tục mua sắm</button>
+        </div>
+      </ng-template>
+    </div>
+
+    <!-- Cột phải: Thanh toán -->
+    <div class="checkout-column rounded-3 d-flex flex-column overflow-y-auto" style="width: 320px;">
+      <div class="checkout-header mb-4">
+        <h4 class="m-0 fw6">Thông tin thanh toán</h4>
+      </div>
+
+      <div class="checkout-summary">
+        <div class="summary-row d-flex justify-content-between fs4 mb-2">
+          <span>Tạm tính:</span>
+          <span>{{ formatPrice(getSubtotal()) }}</span>
+        </div>
+
+        <div class="summary-row discount-row d-flex justify-content-between mb-2">
+          <span>Giảm giá:</span>
+          <div class="discount-input-wrapper d-flex align-items-center gap-1">
+            <input
+              nz-input
+              type="text"
+              [value]="discountAmount | number:'1.0-0'"
+              (input)="onDiscountInput($event)"
+              placeholder="0"
+              class="discount-input text-end"
+              style="width: 120px;">
+            <span class="discount-currency">₫</span>
           </div>
         </div>
 
-        <div class="divider"></div>
-
-        <!-- Button thanh toán -->
-        <div class="checkout-actions mt-4 d-flex gap-3">
-          <button
-            nz-button
-            nzType="primary"
-            nzSize="large"
-            (click)="processCheckout()"
-            class="d-flex align-items-center gap-2 justify-content-center">
-            <span nz-icon nzType="credit-card"></span>
-            Thanh toán
-          </button>
+        <div class="summary-row total fs8 fw6 mt-3 pt-3 d-flex justify-content-between align-items-center">
+          <span>Tổng cộng:</span>
+          <span class="total-amount fs7" style="color: #ff4d4f;">{{ formatPrice(getTotal()) }}</span>
         </div>
       </div>
+
+      <div class="divider my-3" style="height: 1px; background: #e8e8e8;"></div>
+
+      <div class="checkout-actions mt-2">
+        <button
+          nz-button
+          [nzLoading]="isLoading"
+          nzType="primary"
+          nzSize="large"
+          (click)="processCheckout()"
+          class="w-100 d-flex align-items-center gap-2 justify-content-center"
+          [disabled]="cartItems.length === 0">
+          <span nz-icon nzType="credit-card"></span>
+          Thanh toán ({{ formatPrice(getTotal()) }})
+        </button>
+      </div>
+    </div>
   </div>
 </div>

@@ -24,6 +24,8 @@ import { NzDividerModule } from 'ng-zorro-antd/divider';
 import { NzEmptyModule } from 'ng-zorro-antd/empty';
 import { DashboardRoutingModule } from './dashboard-routing.module';
 import { DashboadComponent } from './pages/dashboad/dashboad.component';
+import { NzMessageServiceModule } from 'ng-zorro-antd/message';
+import { NzProgressModule } from 'ng-zorro-antd/progress';
 
 @NgModule({
   declarations: [
@@ -52,7 +54,9 @@ import { DashboadComponent } from './pages/dashboad/dashboad.component';
     NzGridModule,
     NzTagModule,
     NzDividerModule,
-    NzEmptyModule
+    NzEmptyModule,
+    NzMessageServiceModule,
+    NzProgressModule
   ],
   providers: [
     IconCustomService

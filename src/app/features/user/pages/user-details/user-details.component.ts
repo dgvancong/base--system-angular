@@ -1,6 +1,22 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { Product } from '../../models/product.model';
+import { FormBuilder } from '@angular/forms';
+import { NzMessageService } from 'ng-zorro-antd/message';
+import { ProductService } from '../../services/users.service';
+import { CreateOrderRequest } from '../../models/product.model';
+
+export interface CartItem {
+  productID: number;
+  productCode: string;
+  productName: string;
+  sellingPrice: number;
+  purchaseQuantity: number;
+  totalPrice: number;
+  inStock: number;
+  color?: string;
+  size?: string;
+  categoryName?: string;
+}
+
 @Component({
   selector: 'app-user-details',
   templateUrl: './user-details.component.html',
@@ -8,20 +24,27 @@ import { Product } from '../../models/product.model';
 })
 export class UserDetailsComponent implements OnInit {
   selectedPaymentMethod: string = 'cash';
-  cartItems: Product[] = [];
+  cartItems: CartItem[] = [];
   discountAmount: number = 0;
+  paymentMethod: string = 'Tiền mặt';
+  salesPerson: string = 'Nhân viên';
+  notes: string = 'Giao hàng giờ hành chính, trước 17h';
+  isLoading: boolean = false;
 
   @Input() data: any;
   @Output() cancelModal = new EventEmitter<any>();
+  @Output() addSuccess = new EventEmitter<any>();
 
   constructor(
     private fb: FormBuilder,
-  ) {
-
-  }
+    private message: NzMessageService,
+    private productService: ProductService,
+  ) {}
 
   ngOnInit(): void {
-    this.cartItems = this.data || [];
+    if (this.data && Array.isArray(this.data)) {
+      this.cartItems = [...this.data];
+    }
   }
 
   formatPrice(price: number): string {
@@ -29,42 +52,48 @@ export class UserDetailsComponent implements OnInit {
     return price.toLocaleString('vi-VN') + ' ₫';
   }
 
+  formatNumber(price: number): string {
+    if (!price && price !== 0) return '0';
+    return price.toLocaleString('vi-VN');
+  }
+
   getSubtotal(): number {
-    return this.cartItems.reduce((total, item) => total + (item.sellingPrice * item.quantityInStock), 0);
+    return this.cartItems.reduce((total, item) => total + (item.sellingPrice * item.purchaseQuantity), 0);
   }
 
   getTotal(): number {
-    return this.getSubtotal() - this.discountAmount;
+    const total = this.getSubtotal() - this.discountAmount;
+    return total < 0 ? 0 : total;
   }
 
-  updateQuantity(item: Product, newQuantity: number) {
+  updateQuantity(item: CartItem, newQuantity: number): void {
     if (newQuantity < 1) {
-      item.quantityInStock = 1;
-    } else if (newQuantity > item.quantityInStock) {
-      item.quantityInStock = item.quantityInStock;
+      item.purchaseQuantity = 1;
+    } else if (newQuantity > item.inStock) {
+      item.purchaseQuantity = item.inStock;
+      this.message.warning(`Số lượng vượt quá tồn kho (${item.inStock})`);
     } else {
-      item.quantityInStock = newQuantity;
+      item.purchaseQuantity = newQuantity;
     }
+    item.totalPrice = item.sellingPrice * item.purchaseQuantity;
   }
 
-  removeFromCart(item: Product) {
-    const index = this.cartItems.indexOf(item);
+  removeFromCart(item: CartItem): void {
+    const index = this.cartItems.findIndex(i => i.productID === item.productID);
     if (index > -1) {
       this.cartItems.splice(index, 1);
+      this.message.success(`Đã xóa ${item.productName} khỏi giỏ hàng`);
     }
   }
 
-  clearCart() {
+  clearCart(): void {
     if (this.cartItems.length > 0) {
       this.cartItems = [];
+      this.message.success('Đã xóa toàn bộ giỏ hàng');
     }
   }
 
-  processCheckout() {
-
-  }
-
-  onDiscountInput(event: any) {
+  onDiscountInput(event: any): void {
     let value = event.target.value;
     let cleanValue = value.replace(/[^0-9]/g, '');
     let numValue = cleanValue ? parseInt(cleanValue) : 0;
@@ -79,21 +108,41 @@ export class UserDetailsComponent implements OnInit {
     event.target.value = this.formatNumber(numValue);
   }
 
-  formatNumber(price: number): string {
-    if (!price && price !== 0) return '0';
-    return price.toLocaleString('vi-VN');
+  processCheckout(): void {
+    if (this.cartItems.length === 0) {
+      this.message.warning('Giỏ hàng trống, vui lòng thêm sản phẩm');
+      return;
+    }
+    this.isLoading = true;
+    const orderData: CreateOrderRequest = {
+      paymentMethod: this.paymentMethod,
+      salesPerson: this.salesPerson,
+      discountAmount: this.discountAmount,
+      notes: this.notes,
+      items: this.cartItems.map(item => ({
+        productID: item.productID,
+        quantity: item.purchaseQuantity,
+        unitPrice: item.sellingPrice,
+        discountAmount: 0
+      }))
+    };
+    this.productService.createOrder(orderData).subscribe(
+      (res)=>{
+        this.message.success('Tạo đơn hàng thành công');
+        this.isLoading = false;
+        this.addSuccess.emit();
+        this.handleCancel();
+      },
+      (error) => {
+        const errorMessage = error.error?.message || 'Tạo đơn hàng thất bại';
+        this.message.error(errorMessage);
+        this.isLoading = false;
+        this.handleCancel();
+      }
+    );
   }
 
-  onDiscountChange() {
-    if (this.discountAmount > this.getSubtotal()) {
-      this.discountAmount = this.getSubtotal();
-    }
-    if (this.discountAmount < 0) {
-      this.discountAmount = 0;
-    }
-  }
-
-  handleCancel() {
+  handleCancel(): void {
     this.cancelModal.emit();
   }
 }

@@ -10,42 +10,53 @@
     </div>
   </div>
 
-  <!-- Filter Bar (Ant Design + Bootstrap kết hợp) -->
   <div class="filter-bar bg-white rounded-4 shadow-sm mb-4">
     <div class="row g-3 align-items-end p-3">
       <div class="col-md-4">
-        <label class="form-label fw-semibold mb-1"><i class="fas fa-calendar-alt me-1"></i> Loại lọc</label>
+        <label class="form-label fw-semibold mb-1">
+          <i class="fas fa-chart-pie me-1"></i> Loại lọc
+        </label>
         <nz-select [(ngModel)]="filterType" (ngModelChange)="applyFilter()" nzPlaceHolder="Chọn kiểu lọc" class="w-100">
           <nz-option *ngFor="let opt of filterOptions" [nzValue]="opt.value" [nzLabel]="opt.label"></nz-option>
         </nz-select>
       </div>
+
       <div class="col-md-5">
-        <label class="form-label fw-semibold mb-1"><i class="fas fa-calendar-check me-1"></i> Mốc thời gian</label>
-        <nz-date-picker [(ngModel)]="selectedDate" (ngModelChange)="applyFilter()"
+        <label class="form-label fw-semibold mb-1">
+          <i class="fas fa-calendar-check me-1"></i> Mốc thời gian
+        </label>
+        <nz-date-picker
+          [(ngModel)]="selectedDate"
+          (ngModelChange)="applyFilter()"
           [nzFormat]="filterType === 'day' ? 'dd/MM/yyyy' : filterType === 'month' ? 'MM/yyyy' : 'yyyy'"
           [nzMode]="filterType === 'day' ? 'date' : filterType === 'month' ? 'month' : 'year'"
-          [nzPlaceHolder]="'Chọn ' + (filterType === 'day' ? 'ngày' : filterType === 'week' ? 'tuần' : filterType === 'month' ? 'tháng' : 'năm')"
+          [nzPlaceHolder]="'Chọn ' + (filterType === 'day' ? 'ngày' : filterType === 'month' ? 'tháng' : 'năm')"
           class="w-100">
         </nz-date-picker>
       </div>
+
       <div class="col-md-3">
         <div class="alert alert-primary mb-0 py-2 px-3 rounded-pill">
-          <i class="fas fa-chart-line me-2"></i> Đang hiển thị: <strong>{{ selectedDate | date:'dd/MM/yyyy' }}</strong>
+          <i class="fas fa-chart-line me-2"></i>
+          Đang hiển thị: <strong>{{ getDisplayDate() }}</strong>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- Cards thống kê (Bootstrap grid + Ant Statistic) -->
+  <!-- Stats Cards -->
   <div class="row g-4 mb-4">
-    <div class="col-sm-6 col-lg-4">
+    <div class="col-sm-6 col-lg-3">
       <div class="card stat-card h-100 border-0 shadow-sm">
         <div class="card-body">
           <div class="d-flex align-items-center justify-content-between">
             <div>
               <p class="text-muted mb-1">Tổng doanh thu</p>
               <h3 class="mb-0 text-primary">{{ totalRevenue | number:'1.0-0' }} ₫</h3>
-              <small class="text-success"><i class="fas fa-arrow-up me-1"></i> +12%</small>
+              <small class="text-success" *ngIf="orderCount > 0">
+                <i class="fas fa-chart-line me-1"></i>
+                TB: {{ stats.averageOrderValue | number:'1.0-0' }} ₫/đơn
+              </small>
             </div>
             <div class="bg-light rounded-circle p-3">
               <i nz-icon nzType="shopping-cart" nzTheme="outline" style="font-size: 28px; color:#1677ff;"></i>
@@ -54,13 +65,14 @@
         </div>
       </div>
     </div>
-    <div class="col-sm-6 col-lg-4">
+
+    <div class="col-sm-6 col-lg-3">
       <div class="card stat-card h-100 border-0 shadow-sm">
         <div class="card-body">
           <div class="d-flex align-items-center justify-content-between">
             <div>
               <p class="text-muted mb-1">Tổng số lượng bán</p>
-              <h3 class="mb-0 text-success">{{ totalQuantity }}</h3>
+              <h3 class="mb-0 text-success">{{ totalQuantity | number }}</h3>
               <small class="text-muted">sản phẩm</small>
             </div>
             <div class="bg-light rounded-circle p-3">
@@ -70,17 +82,39 @@
         </div>
       </div>
     </div>
-    <div class="col-sm-6 col-lg-4">
+
+    <div class="col-sm-6 col-lg-3">
       <div class="card stat-card h-100 border-0 shadow-sm">
         <div class="card-body">
           <div class="d-flex align-items-center justify-content-between">
             <div>
               <p class="text-muted mb-1">Số đơn hàng</p>
               <h3 class="mb-0 text-warning">{{ orderCount }}</h3>
-              <small class="text-muted">đơn đã lọc</small>
+              <small class="text-muted">đơn hàng</small>
             </div>
             <div class="bg-light rounded-circle p-3">
               <i nz-icon nzType="profile" nzTheme="outline" style="font-size: 28px; color:#fa8c16;"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-sm-6 col-lg-3">
+      <div class="card stat-card h-100 border-0 shadow-sm">
+        <div class="card-body">
+          <div class="d-flex align-items-center justify-content-between">
+            <div>
+              <p class="text-muted mb-1">Tỷ lệ hoàn thành</p>
+              <h3 class="mb-0 text-info">
+                {{ orderCount > 0 ? (stats.completedOrders / orderCount * 100) : 0 | number:'1.0-0' }}%
+              </h3>
+              <small class="text-muted">
+                {{ stats.completedOrders }}/{{ orderCount }} đơn
+              </small>
+            </div>
+            <div class="bg-light rounded-circle p-3">
+              <i nz-icon nzType="check-circle" nzTheme="outline" style="font-size: 28px; color:#13c2c2;"></i>
             </div>
           </div>
         </div>
@@ -112,7 +146,7 @@
             <tr>
               <th style="width: 50px"></th>
               <th>Mã đơn</th>
-              <th>Khách hàng</th>
+              <th>Nhân viên</th>
               <th>Số lượng</th>
               <th>Tổng tiền</th>
               <th>Trạng thái</th>
@@ -129,16 +163,11 @@
                   </button>
                 </td>
                 <td class="fw-semibold">#{{ order.id }}</td>
-                <td>
-                  <div class="d-flex flex-column">
-                    <span>{{ order.customerName }}</span>
-                    <small class="text-muted" style="font-size: 11px;">{{ order.customerPhone }}</small>
-                  </div>
-                </td>
+                <td>{{ order.salesPerson || 'Chưa phân công' }}</td>
                 <td>{{ order.quantity }}</td>
-                <td class="text-primary fw-semibold">{{ order.totalAmount | number:'1.0-0' }} ₫</td>
+                <td class="text-primary fw-semibold">{{ formatCurrency(order.totalAmount) }}</td>
                 <td>
-                  <nz-tag [nzColor]="getStatusTag(order.status)">{{ getStatusText(order.status) }}</nz-tag>
+                  <nz-tag [nzColor]="getStatusTag(order.orderStatus)">{{ order.orderStatus }}</nz-tag>
                 </td>
                 <td>{{ order.orderDate | date:'dd/MM/yyyy' }}</td>
               </tr>
@@ -171,28 +200,35 @@
                           </div>
                           <div class="card-body">
                             <p class="mb-2"><strong>Mã đơn:</strong> #{{ order.id }}</p>
-                            <p class="mb-2"><strong>Ngày đặt:</strong> {{ order.orderDate | date:'dd/MM/yyyy HH:mm' }}</p>
-                            <p class="mb-2"><strong>Trạng thái:</strong>
-                              <nz-tag [nzColor]="getStatusTag(order.status)" class="ms-1">{{ getStatusText(order.status) }}</nz-tag>
+                            <p class="mb-2"><strong>Ngày đặt:</strong> {{ formatDateTime(order.orderDate) }}</p>
+                            <p class="mb-2"><strong>Nhân viên:</strong> {{ order.salesPerson || 'Chưa phân công' }}</p>
+                            <p class="mb-2">
+                              <strong>Trạng thái:</strong>
+                              <span class="status-badge" [ngClass]="getStatusClass(order.orderStatus)">
+                                <span class="status-dot"></span>
+                                {{ order.orderStatus }}
+                              </span>
                             </p>
                             <p class="mb-0"><strong>Tổng sản phẩm:</strong> {{ order.quantity }}</p>
+                            <p class="mb-0" *ngIf="order.notes"><strong>Ghi chú:</strong> {{ order.notes }}</p>
                           </div>
                         </div>
                       </div>
 
-                      <!-- Phương thức thanh toán -->
+                      <!-- Thanh toán -->
                       <div class="col-md-4 mb-3">
                         <div class="card h-100 border-0 shadow-sm">
                           <div class="card-header bg-white fw-semibold">
                             <i class="fas fa-credit-card me-2 text-primary"></i> Thanh toán
                           </div>
                           <div class="card-body">
-                            <p class="mb-2"><strong>Phương thức:</strong> Thanh toán khi nhận hàng (COD)</p>
-                            <p class="mb-2"><strong>Tổng tiền:</strong> <span class="text-danger fw-bold">{{ order.totalAmount | number:'1.0-0' }} ₫</span></p>
-                            <p class="mb-0"><strong>Trạng thái TT:</strong>
-                              <span class="badge bg-success" *ngIf="order.status === 'completed'">Đã thanh toán</span>
-                              <span class="badge bg-warning" *ngIf="order.status === 'pending'">Chưa thanh toán</span>
-                              <span class="badge bg-danger" *ngIf="order.status === 'cancelled'">Đã hủy</span>
+                            <p class="mb-2"><strong>Phương thức:</strong> {{ order.paymentMethod || 'COD' }}</p>
+                            <p class="mb-2"><strong>Tạm tính:</strong> {{ formatCurrency(order.totalAmount + order.discountAmount) }}</p>
+                            <p class="mb-2" *ngIf="order.discountAmount > 0">
+                              <strong>Giảm giá:</strong> {{ formatCurrency(order.discountAmount) }}
+                            </p>
+                            <p class="mb-0"><strong>Tổng tiền:</strong>
+                              <span class="text-danger fw-bold">{{ formatCurrency(order.totalAmount) }}</span>
                             </p>
                           </div>
                         </div>
@@ -209,6 +245,7 @@
                           <thead class="table-light">
                             <tr>
                               <th style="width: 50px">#</th>
+                              <th>Mã SP</th>
                               <th>Tên sản phẩm</th>
                               <th class="text-center" style="width: 120px">Số lượng</th>
                               <th class="text-end" style="width: 150px">Đơn giá</th>
@@ -218,13 +255,18 @@
                           <tbody>
                             <tr *ngFor="let product of order.products; let i = index">
                               <td class="text-center">{{ i + 1 }}</td>
+                              <td>{{ product.code || '-' }}</td>
                               <td>{{ product.name }}</td>
                               <td class="text-center">{{ product.quantity }}</td>
                               <td class="text-end">{{ formatCurrency(product.price) }}</td>
                               <td class="text-end text-primary fw-semibold">{{ formatCurrency(product.total) }}</td>
                             </tr>
                             <tr class="table-light fw-semibold">
-                              <td colspan="4" class="text-end">Tổng cộng:</td>
+                              <td colspan="5" class="text-end">Giảm giá:</td>
+                              <td class="text-end text-danger">{{ formatCurrency(order.discountAmount) }}</td>
+                            </tr>
+                            <tr class="table-light fw-semibold">
+                              <td colspan="5" class="text-end">Tổng cộng:</td>
                               <td class="text-end text-danger">{{ formatCurrency(order.totalAmount) }}</td>
                             </tr>
                           </tbody>
@@ -232,9 +274,9 @@
                       </div>
                     </div>
 
-                    <!-- Ghi chú -->
                     <div class="mt-3 text-muted small">
-                      <i class="fas fa-clock me-1"></i> Hóa đơn được tạo lúc {{ order.orderDate | date:'HH:mm:ss' }} ngày {{ order.orderDate | date:'dd/MM/yyyy' }}
+                      <i class="fas fa-clock me-1"></i>
+                      Hóa đơn được tạo lúc {{ formatDateTime(order.orderDate) }}
                     </div>
                   </div>
                 </td>
@@ -243,11 +285,27 @@
 
             <tr *ngIf="filteredOrders.length === 0">
               <td colspan="7" class="text-center py-5 text-muted">
-                <i class="fas fa-box-open fa-2x mb-2 d-block"></i> Không có đơn hàng nào phù hợp
+                <i class="fas fa-box-open fa-2x mb-2 d-block"></i> Không có đơn hàng nào
               </td>
             </tr>
           </tbody>
         </table>
+
+        <!-- Phân trang -->
+        <div class="pagination-wrapper mt-3 p-3">
+          <app-pagination
+            [data]="filteredOrders"
+            [start]="start"
+            [end]="end"
+            [total]="totalCount"
+            [page]="page"
+            [pageSize]="pageSize"
+            [pageSizeOptions]="pageSizeOptions"
+            (onJump)="jumpToPage($event)"
+            (onChangePage)="handlePageIndexChange($event)"
+            (onPageSizeChange)="handlePageSizeChange($event)">
+          </app-pagination>
+        </div>
       </div>
     </div>
     <div class="card-footer bg-white border-0 py-3 text-muted small">
@@ -255,50 +313,5 @@
     </div>
   </div>
 
-  <!-- Bảng danh sách đơn hàng -->
-  <!-- <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
-    <div class="card-header bg-white py-3 border-0">
-      <div class="d-flex justify-content-between align-items-center">
-        <h5 class="mb-0 fw-semibold"><i class="fas fa-list-ul me-2"></i> Chi tiết đơn hàng</h5>
-        <span class="badge bg-light text-dark rounded-pill px-3 py-2">{{ filteredOrders.length }} đơn</span>
-      </div>
-    </div>
-    <div class="card-body p-0">
-      <div class="table-responsive">
-        <table class="table table-hover align-middle mb-0">
-          <thead class="table-light">
-            <tr>
-              <th>Mã đơn</th>
-              <th>Khách hàng</th>
-              <th>Số lượng</th>
-              <th>Tổng tiền</th>
-              <th>Trạng thái</th>
-              <th>Ngày đặt</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr *ngFor="let order of filteredOrders">
-              <td class="fw-semibold">#{{ order.id }}</td>
-              <td>{{ order.customerName }}</td>
-              <td>{{ order.quantity }}</td>
-              <td class="text-primary fw-semibold">{{ order.totalAmount | number:'1.0-0' }} ₫</td>
-              <td>
-                <nz-tag [nzColor]="getStatusTag(order.status)">{{ getStatusText(order.status) }}</nz-tag>
-              </td>
-              <td>{{ order.orderDate | date:'dd/MM/yyyy' }}</td>
-            </tr>
-            <tr *ngIf="filteredOrders.length === 0">
-              <td colspan="6" class="text-center py-5 text-muted">
-                <i class="fas fa-box-open fa-2x mb-2 d-block"></i> Không có đơn hàng nào phù hợp
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
-    <div class="card-footer bg-white border-0 py-3 text-muted small">
-      <i class="fas fa-info-circle me-1"></i> Dữ liệu thống kê dựa trên bộ lọc thời gian
-    </div>
-  </div> -->
 </div>
 

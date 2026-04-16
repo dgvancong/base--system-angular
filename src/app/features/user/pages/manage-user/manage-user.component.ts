@@ -15,7 +15,6 @@ export class ManageUserComponent implements OnInit {
   listColumnsUserDisplay = [...listProduct];
   listOfData: Product[] = [];
   listOfDisplayData: Product[] = [];
-  setOfCheckedId = new Set<string>();
   loading: boolean = false;
   start: number = 1;
   page: number = 1;
@@ -45,31 +44,31 @@ export class ManageUserComponent implements OnInit {
   sortBy = '';
   sortDirection = 'desc';
   productID: any = null;
-  bodyDataProduct: any[] = [];
-  bodyDataProductadd: any[] = [];
   addinvoice: boolean = false;
-  purchaseQuantities: { [key: number]: number } = {};
   showPurchasePrice: { [productId: number]: boolean } = {};
+  tempProduct: any = null;
+  tempQuantity: number = 1;
+  cartItems: any[] = [];
 
   private originalProductType: string | null = null;
   private originalColors: string[] = [];
   private originalPriceRange: [number, number] = [0, 30000000];
 
   colors = [
-    { name: 'Đen', value: 'black', code: '#000000' },
-    { name: 'Trắng', value: 'white', code: '#FFFFFF' },
-    { name: 'Đỏ', value: 'red', code: '#FF0000' },
-    { name: 'Xanh dương', value: 'blue', code: '#0000FF' },
-    { name: 'Xanh lá', value: 'green', code: '#00FF00' },
-    { name: 'Vàng', value: 'yellow', code: '#FFFF00' },
-    { name: 'Tím', value: 'purple', code: '#800080' },
-    { name: 'Cam', value: 'orange', code: '#FFA500' },
-    { name: 'Hồng', value: 'pink', code: '#FFC0CB' },
-    { name: 'Xám', value: 'gray', code: '#808080' },
-    { name: 'Nâu', value: 'brown', code: '#8B4513' },
-    { name: 'Xanh ngọc', value: 'teal', code: '#008080' },
-    { name: 'Vàng kim', value: 'gold', code: '#FFD700' },
-    { name: 'Bạc', value: 'silver', code: '#C0C0C0' },
+    { name: 'Đen', value: 'Đen', code: '#000000' },
+    { name: 'Trắng', value: 'Trắng', code: '#FFFFFF' },
+    { name: 'Đỏ', value: 'Đỏ', code: '#FF0000' },
+    { name: 'Xanh dương', value: 'Xanh dương', code: '#0000FF' },
+    { name: 'Xanh lá', value: 'Xanh lá', code: '#00FF00' },
+    { name: 'Vàng', value: 'Vàng', code: '#FFFF00' },
+    { name: 'Tím', value: 'Tím', code: '#800080' },
+    { name: 'Cam', value: 'Cam', code: '#FFA500' },
+    { name: 'Hồng', value: 'Hồng', code: '#FFC0CB' },
+    { name: 'Xám', value: 'Xám', code: '#808080' },
+    { name: 'Nâu', value: 'Nâu', code: '#8B4513' },
+    { name: 'Xanh ngọc', value: 'Xanh ngọc', code: '#008080' },
+    { name: 'Vàng kim', value: 'Vàng kim', code: '#FFD700' },
+    { name: 'Bạc', value: 'Bạc', code: '#C0C0C0' },
   ];
 
   pricePresets = [
@@ -101,24 +100,38 @@ export class ManageUserComponent implements OnInit {
 
   loadProducts(): void {
     this.loading = true;
-    const filter = {
-      searchTerm: this.searchTerm || undefined,
-      categoryName: this.selectedCategory || undefined,
-      brandName: this.selectedBrand || undefined,
-      status: this.selectedStatus || undefined,
-      minPrice: this.minPrice || undefined,
-      maxPrice: this.maxPrice || undefined,
-      sortBy: this.sortBy || undefined,
-      isDescending: this.sortDirection === 'desc',
+    const filter: any = {
       pageNumber: this.page,
       pageSize: this.pageSize
     };
+    if (this.searchTerm) {
+      filter.searchTerm = this.searchTerm;
+    }
+    if (this.selectedCategory) {
+      filter.categoryName = this.selectedCategory;
+    }
+    if (this.selectedBrand) {
+      filter.brandName = this.selectedBrand;
+    }
+    if (this.selectedStatus) {
+      filter.status = this.selectedStatus;
+    }
+    if (this.minPrice && this.minPrice > 0) {
+      filter.minPrice = this.minPrice;
+    }
+    if (this.maxPrice && this.maxPrice < 30000000) {
+      filter.maxPrice = this.maxPrice;
+    }
+
+    if (this.selectedColors && this.selectedColors?.length > 0) {
+      filter.colors = this.selectedColors.join(',');
+    }
+
     this.productService.getProducts(filter).subscribe(
       (res: any) => {
         this.loading = false;
         this.listOfData = res.items;
         this.listOfData.forEach(p => {
-        this.purchaseQuantities[p.productID] = 1;
         });
         this.totalCount = res.totalCount;
         this.start = (this.page - 1) * this.pageSize + 1;
@@ -230,29 +243,31 @@ export class ManageUserComponent implements OnInit {
     this.onPriceChange();
   }
 
-  applyFilters() {
-    const filters = {
-      productType: this.selectedProductType,
-      colors: this.selectedColors,
-      priceRange: this.priceRange,
-    };
-    this.updateActiveFiltersStatus();
+  applyFilters(): void {
+    this.selectedCategory = this.selectedProductType || '';
+    this.minPrice = this.priceRange[0];
+    this.maxPrice = this.priceRange[1];
+    this.page = 1;
     this.isDropdownOpen = false;
+    this.loadProducts();
   }
 
-  cancelFilters() {
-    this.selectedProductType = this.originalProductType;
-    this.selectedColors = [...this.originalColors];
-    this.priceRange = [...this.originalPriceRange] as [number, number];
-    this.updateActiveFiltersStatus();
-    this.isDropdownOpen = false;
-  }
-
-  clearAllFilters() {
+  cancelFilters(): void {
     this.selectedProductType = null;
     this.selectedColors = [];
     this.priceRange = [0, 30000000];
-    this.updateActiveFiltersStatus();
+    this.isDropdownOpen = false;
+  }
+
+  clearAllFilters(): void {
+    this.selectedProductType = null;
+    this.selectedCategory = '';
+    this.selectedColors = [];
+    this.priceRange = [0, 30000000];
+    this.minPrice = null;
+    this.maxPrice = null;
+    this.page = 1;
+    this.loadProducts();
   }
 
   formatPrice(value: any): string {
@@ -302,7 +317,7 @@ export class ManageUserComponent implements OnInit {
     this.updateActiveFiltersStatus();
   }
 
-  updateActiveFiltersStatus() {
+  updateActiveFiltersStatus(): void {
     this.hasActiveFilters = !!(
       this.selectedProductType ||
       this.selectedColors.length > 0 ||
@@ -367,17 +382,23 @@ export class ManageUserComponent implements OnInit {
     this.isPayment = false;
   }
 
-  addProductCatego(data: any){
+  updateTempQuantity(quantity: number): void {
+    this.tempQuantity = quantity;
+  }
+
+  addProductCatego(product: any): void {
+    this.tempProduct = product;
+    this.tempQuantity = 1;
     this.addinvoice = true;
-    this.bodyDataProductadd = data ? [data] : [];
   }
 
-  updateQuantity(productId: number, quantity: number): void {
-    this.purchaseQuantities[productId] = quantity;
-  }
-
-  addToCart(product: any): void {
-    const quantity = this.purchaseQuantities[product.productID];
+ addToCart(): void {
+    if (!this.tempProduct) {
+      this.message.error('Không có sản phẩm để thêm');
+      return;
+    }
+    const quantity = this.tempQuantity;
+    const product = this.tempProduct;
     if (!quantity || quantity <= 0) {
       this.message.error('Vui lòng chọn số lượng hợp lệ');
       return;
@@ -386,10 +407,12 @@ export class ManageUserComponent implements OnInit {
       this.message.error(`Số lượng vượt quá tồn kho (${product.quantityInStock})`);
       return;
     }
-    const existingProduct = this.bodyDataProductadd.find(p => p.productID === product.productID);
-    if (existingProduct) {
-      existingProduct.purchaseQuantity = quantity;
-      existingProduct.totalPrice = product.sellingPrice * quantity;
+    const existingIndex = this.cartItems.findIndex(
+      p => p.productID === product.productID
+    );
+    if (existingIndex !== -1) {
+      this.cartItems[existingIndex].purchaseQuantity = quantity;
+      this.cartItems[existingIndex].totalPrice = product.sellingPrice * quantity;
       this.message.info(`Đã cập nhật số lượng ${product.productName}`);
     }
     else {
@@ -401,18 +424,23 @@ export class ManageUserComponent implements OnInit {
         purchaseQuantity: quantity,
         totalPrice: product.sellingPrice * quantity,
         addedAt: new Date(),
-        inStock: product.quantityInStock
+        inStock: product.quantityInStock,
+        color: product.color,
+        size: product.size,
+        categoryName: product.categoryName
       };
-      this.bodyDataProductadd.push(cartItem);
+      this.cartItems.push(cartItem);
       this.message.success(`Đã thêm ${quantity} ${product.productName} vào giỏ hàng`);
     }
-    this.bodyDataProduct = [...this.bodyDataProductadd];
-    this.purchaseQuantities[product.productID] = 1;
     this.addinvoice = false;
+    this.tempProduct = null;
+    this.tempQuantity = 1;
   }
 
-  cancelInvoiceAdd(){
+  cancelInvoiceAdd(): void {
     this.addinvoice = false;
+    this.tempProduct = null;
+    this.tempQuantity = 1;
   }
 
   togglePurchasePrice(productId: number): void {
